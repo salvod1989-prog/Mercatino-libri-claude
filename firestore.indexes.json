@@ -1,0 +1,72 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "libri",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "stato_annuncio", "order": "ASCENDING" },
+        { "fieldPath": "creato_il",      "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "libri",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "stato_annuncio", "order": "ASCENDING" },
+        { "fieldPath": "classe",         "order": "ASCENDING" },
+        { "fieldPath": "creato_il",      "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "libri",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "stato_annuncio", "order": "ASCENDING" },
+        { "fieldPath": "materia",        "order": "ASCENDING" },
+        { "fieldPath": "creato_il",      "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "libri",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "stato_annuncio", "order": "ASCENDING" },
+        { "fieldPath": "indirizzo",      "order": "ASCENDING" },
+        { "fieldPath": "creato_il",      "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "libri",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "venditore_id", "order": "ASCENDING" },
+        { "fieldPath": "creato_il",    "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "prenotazioni",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "acquirente_id", "order": "ASCENDING" },
+        { "fieldPath": "creato_il",     "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "prenotazioni",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "libro_id",  "order": "ASCENDING" },
+        { "fieldPath": "creato_il", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "segnalazioni",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "stato",     "order": "ASCENDING" },
+        { "fieldPath": "creato_il", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

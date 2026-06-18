@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Mercatino Libri Usati Scuola — Compra e vendi libri scolastici usati con i tuoi compagni. Semplice, sicuro, a scuola.">
+  <title>Mercatino Libri — Scuola</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/stile.css">
+</head>
+<body>
+
+<!-- ============================================================
+     NAVBAR
+     ============================================================ -->
+<header class="navbar" role="banner">
+  <nav class="navbar-inner" aria-label="Navigazione principale">
+    <a href="#home" class="navbar-logo" onclick="mostraPagina('home');return false" aria-label="Mercatino Libri - Home">
+      <span class="logo-icon" aria-hidden="true">📚</span>
+      <span>Mercatino Libri</span>
+    </a>
+
+    <div class="navbar-search" role="search">
+      <input type="search" id="cerca-input" placeholder="Cerca titolo, ISBN, materia…"
+        aria-label="Cerca libri"
+        onkeydown="if(event.key==='Enter')cercaRapido(this.value)">
+      <button class="search-btn" onclick="cercaRapido(document.getElementById('cerca-input').value)" aria-label="Cerca">🔍</button>
+    </div>
+
+    <div class="navbar-actions" id="navbar-utente">
+      <button class="btn-nav btn-nav-outline" onclick="apriModal('modal-login')">Accedi</button>
+      <button class="btn-nav btn-nav-solid" onclick="apriModal('modal-registrazione')">Registrati</button>
+    </div>
+  </nav>
+
+  <!-- Barra navigazione secondaria -->
+  <div style="background:var(--grigio-1);border-top:1px solid var(--grigio-2)">
+    <div style="max-width:1100px;margin:0 auto;padding:.4rem 1.25rem;display:flex;gap:1.5rem;font-size:.88rem;overflow-x:auto">
+      <a href="#home" onclick="mostraPagina('home');return false" style="color:var(--testo-muted);white-space:nowrap">🏠 Home</a>
+      <a href="#catalogo" onclick="mostraPagina('catalogo');caricaCatalogo();return false" style="color:var(--testo-muted);white-space:nowrap">📖 Catalogo</a>
+      <a href="#pubblica" onclick="mostraPagina('pubblica');return false" style="color:var(--verde);font-weight:600;white-space:nowrap">+ Vendi un libro</a>
+      <a href="#regolamento" onclick="mostraPagina('regolamento');return false" style="color:var(--testo-muted);white-space:nowrap">📋 Regolamento</a>
+      <a href="#privacy" onclick="mostraPagina('privacy');return false" style="color:var(--testo-muted);white-space:nowrap">🔒 Privacy</a>
+
+    </div>
+  </div>
+</header>
+
+<!-- ============================================================
+     HOME PAGE
+     ============================================================ -->
+<main id="pag-home" class="pagina">
+
+  <!-- Hero -->
+  <section class="hero" aria-labelledby="hero-titolo">
+    <div class="container">
+      <h1 id="hero-titolo">Libri usati tra studenti,<br>scambi a scuola.</h1>
+      <p class="hero-sub">Il mercatino scolastico per comprare e vendere libri usati in modo semplice, sicuro e conveniente. Risparmia sulla lista testi, aiuta l'ambiente.</p>
+      <div class="hero-cta">
+        <button class="btn btn-lg btn-hero-primario" onclick="mostraPagina('catalogo');caricaCatalogo()">🔍 Cerca libri</button>
+        <button class="btn btn-lg btn-hero-outline" onclick="mostraPagina('pubblica')">📤 Vendi un libro</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Come funziona -->
+  <section class="section" style="background:var(--bianco)" aria-labelledby="come-funziona">
+    <div class="container">
+      <div class="section-title">
+        <h2 id="come-funziona">Come funziona</h2>
+        <p>Tre passi semplici per trovare o vendere il tuo libro</p>
+      </div>
+      <div class="steps-grid">
+        <div class="step-card">
+          <div class="step-num">1</div>
+          <h3>Pubblica il libro</h3>
+          <p>Inserisci titolo, ISBN, foto e prezzo. Il tuo annuncio sarà visibile subito a tutti gli studenti della scuola.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">2</div>
+          <h3>Prenota e paga</h3>
+          <p>Trova il libro che ti serve, prenotalo e scegli se pagare online in modo sicuro o direttamente di persona.</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">3</div>
+          <h3>Scambia a scuola</h3>
+          <p>Vi incontrate nell'atrio, in biblioteca o all'ingresso. Il venditore conferma la consegna e l'annuncio si chiude.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Vantaggi -->
+  <section class="section" aria-labelledby="vantaggi-titolo">
+    <div class="container">
+      <div class="section-title">
+        <h2 id="vantaggi-titolo">Perché usare il mercatino</h2>
+      </div>
+      <div class="vantaggi-grid">
+        <div class="vantaggio-card">
+          <span class="vantaggio-icon">💰</span>
+          <div>
+            <h3>Risparmia sulla lista testi</h3>
+            <p>I libri usati costano mediamente il 50–70% in meno. Ogni anno la spesa può ridursi di centinaia di euro.</p>
+          </div>
+        </div>
+        <div class="vantaggio-card">
+          <span class="vantaggio-icon">🌱</span>
+          <div>
+            <h3>Fa bene all'ambiente</h3>
+            <p>Ogni libro riusato è un libro in meno da produrre. Un piccolo gesto, un grande impatto collettivo.</p>
+          </div>
+        </div>
+        <div class="vantaggio-card">
+          <span class="vantaggio-icon">🔒</span>
+          <div>
+            <h3>Scambi sicuri a scuola</h3>
+            <p>Lo scambio avviene sempre a scuola, in un luogo conosciuto. Nessun incontro con sconosciuti fuori dall'istituto.</p>
+          </div>
+        </div>
+        <div class="vantaggio-card">
+          <span class="vantaggio-icon">📱</span>
+          <div>
+            <h3>Semplice da usare</h3>
+            <p>Funziona da smartphone, tablet o PC. Pubblica un annuncio in pochi minuti, senza complicazioni.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Ultimi libri disponibili -->
+  <section class="section" style="background:var(--bianco)" aria-labelledby="ultimi-titolo">
+    <div class="container">
+      <div class="section-title">
+        <h2 id="ultimi-titolo">Libri disponibili ora</h2>
+        <p>Gli annunci più recenti pubblicati dai tuoi compagni</p>
+      </div>
+      <div id="libri-home" class="libri-grid"></div>
+      <div style="text-align:center;margin-top:1.75rem">
+        <button class="btn btn-outline btn-lg" onclick="mostraPagina('catalogo');caricaCatalogo()">Vedi tutto il catalogo →</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA finale -->
+  <section class="cta-strip" aria-labelledby="cta-titolo">
+    <div class="container">
+      <h2 id="cta-titolo">Hai libri da vendere?</h2>
+      <p>Pubblica il tuo annuncio gratis in pochi minuti. Migliaia di studenti potrebbero cercare proprio i tuoi libri.</p>
+      <button class="btn btn-primario btn-lg" onclick="mostraPagina('pubblica')">📤 Pubblica il tuo primo libro</button>
+    </div>
+  </section>
+
+</main>
+
+<!-- ============================================================
+     CATALOGO
+     ============================================================ -->
+<main id="pag-catalogo" class="pagina" hidden aria-label="Catalogo libri">
+  <div class="container">
+    <h1 style="padding:1.5rem 0 .5rem">Catalogo libri</h1>
+
+    <!-- Filtro stato annuncio rapido -->
+    <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem">
+      <button class="btn btn-sm btn-primario" onclick="document.getElementById('filtro-stato-annuncio').value='disponibile';applicaFiltri()">✓ Disponibili</button>
+      <button class="btn btn-sm btn-ghost" onclick="document.getElementById('filtro-stato-annuncio').value='';applicaFiltri()">Tutti</button>
+      <button class="btn btn-sm btn-ghost" onclick="document.getElementById('filtro-stato-annuncio').value='prenotato';applicaFiltri()">⏳ Prenotati</button>
+    </div>
+
+    <div class="catalogo-layout">
+      <!-- Pannello filtri -->
+      <aside id="pannello-filtri" class="filtri-panel" aria-label="Filtri ricerca">
+        <h3>Filtra</h3>
+
+        <div class="filtro-gruppo">
+          <label for="filtro-titolo">Titolo</label>
+          <input type="text" id="filtro-titolo" placeholder="es. Matematica.blu" oninput="applicaFiltri()">
+        </div>
+        <div class="filtro-gruppo">
+          <label for="filtro-isbn">ISBN</label>
+          <input type="text" id="filtro-isbn" placeholder="978-..." oninput="applicaFiltri()">
+        </div>
+        <div class="filtro-gruppo">
+          <label for="filtro-classe">Classe</label>
+          <select id="filtro-classe" onchange="applicaFiltri()">
+            <option value="">Tutte le classi</option>
+          </select>
+        </div>
+        <div class="filtro-gruppo">
+          <label for="filtro-indirizzo">Indirizzo</label>
+          <select id="filtro-indirizzo" onchange="applicaFiltri()">
+            <option value="">Tutti gli indirizzi</option>
+          </select>
+        </div>
+        <div class="filtro-gruppo">
+          <label for="filtro-materia">Materia</label>
+          <select id="filtro-materia" onchange="applicaFiltri()">
+            <option value="">Tutte le materie</option>
+          </select>
+        </div>
+        <div class="filtro-gruppo">
+          <label for="filtro-stato-libro">Condizione libro</label>
+          <select id="filtro-stato-libro" onchange="applicaFiltri()">
+            <option value="">Qualsiasi condizione</option>
+          </select>
+        </div>
+        <div class="filtro-gruppo">
+          <label for="filtro-prezzo-max">Prezzo massimo (€)</label>
+          <input type="number" id="filtro-prezzo-max" placeholder="es. 15" min="0" oninput="applicaFiltri()">
+        </div>
+
+        <!-- nascosto ma usato via JS -->
+        <select id="filtro-stato-annuncio" style="display:none" onchange="applicaFiltri()">
+          <option value="">Tutti</option>
+          <option value="disponibile" selected>Disponibile</option>
+          <option value="prenotato">Prenotato</option>
+          <option value="venduto">Venduto</option>
+        </select>
+
+        <div class="filtri-azioni">
+          <button class="btn btn-ghost btn-sm" onclick="resetFiltri()" style="flex:1">Reset filtri</button>
+        </div>
+      </aside>
+
+      <!-- Griglia risultati -->
+      <section aria-live="polite" aria-label="Risultati ricerca">
+        <p id="conteggio-risultati" style="font-size:.88rem;color:var(--testo-muted);margin-bottom:.75rem"></p>
+        <div id="griglia-libri" class="libri-grid"></div>
+      </section>
+    </div>
+  </div>
+</main>
+
+<!-- ============================================================
+     SCHEDA DETTAGLIO LIBRO
+     ============================================================ -->
+<main id="pag-scheda-libro" class="pagina" hidden aria-label="Dettaglio libro">
+  <div id="scheda-contenuto"></div>
+</main>
+
+<!-- ============================================================
+     FLUSSO PRENOTAZIONE
+     ============================================================ -->
+<main id="pag-prenotazione" class="pagina" hidden aria-label="Prenota libro">
+  <div class="container" style="padding:2rem 1.25rem">
+    <nav class="breadcrumb">
+      <a href="#" onclick="mostraPagina('catalogo');return false">Catalogo</a>
+      <span>›</span>
+      <span>Prenotazione</span>
+    </nav>
+    <div id="form-prenotazione"></div>
+  </div>
+</main>
+
+<!-- ============================================================
+     PUBBLICA LIBRO
+     ============================================================ -->
+<main id="pag-pubblica" class="pagina" hidden aria-label="Pubblica un libro">
+  <div class="container" style="padding:2rem 1.25rem">
+    <nav class="breadcrumb">
+      <a href="#" onclick="mostraPagina('home');return false">Home</a>
+      <span>›</span>
+      <span>Pubblica un libro</span>
+    </nav>
+
+    <div class="form-card" style="max-width:640px">
+      <h2>Pubblica il tuo libro</h2>
+      <p style="color:var(--testo-muted);margin-bottom:1.5rem;font-size:.93rem">Inserisci i dati del libro che vuoi vendere. L'annuncio sarà visibile subito agli altri studenti.</p>
+
+      <form id="form-pubblica" onsubmit="inviaAnnuncio(event)" novalidate>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
+          <div class="form-gruppo" style="grid-column:1/-1">
+            <label for="pub-titolo">Titolo del libro *</label>
+            <input type="text" id="pub-titolo" placeholder="es. Matematica.blu 4" required>
+          </div>
+          <div class="form-gruppo" style="grid-column:1/-1">
+            <label for="pub-autore">Autore/i *</label>
+            <input type="text" id="pub-autore" placeholder="es. Bergamini, Trifone, Barozzi" required>
+          </div>
+          <div class="form-gruppo">
+            <label for="pub-isbn">ISBN</label>
+            <input type="text" id="pub-isbn" placeholder="978-...">
+          </div>
+          <div class="form-gruppo">
+            <label for="pub-editore">Editore</label>
+            <input type="text" id="pub-editore" placeholder="es. Zanichelli">
+          </div>
+          <div class="form-gruppo">
+            <label for="pub-materia">Materia *</label>
+            <select id="pub-materia" required>
+              <option value="">Seleziona...</option>
+              <option>Italiano</option><option>Latino</option><option>Greco</option>
+              <option>Matematica</option><option>Fisica</option><option>Scienze</option>
+              <option>Storia</option><option>Filosofia</option><option>Inglese</option>
+              <option>Arte</option><option>Storia dell'arte</option><option>Informatica</option>
+              <option>Diritto</option><option>Economia</option>
+            </select>
+          </div>
+          <div class="form-gruppo">
+            <label for="pub-classe">Classe *</label>
+            <select id="pub-classe" required>
+              <option value="">Seleziona...</option>
+              <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
+            </select>
+          </div>
+          <div class="form-gruppo" style="grid-column:1/-1">
+            <label for="pub-indirizzo">Indirizzo scolastico *</label>
+            <select id="pub-indirizzo" required>
+              <option value="">Seleziona...</option>
+              <option>Scientifico</option><option>Classico</option><option>Linguistico</option>
+              <option>Liceo delle Scienze Umane</option><option>Tecnico Economico</option>
+              <option>Tecnico Tecnologico</option>
+            </select>
+          </div>
+          <div class="form-gruppo">
+            <label for="pub-prezzo">Prezzo (€) *</label>
+            <input type="number" id="pub-prezzo" placeholder="es. 10" min="0" step="0.50" required>
+          </div>
+          <div class="form-gruppo">
+            <label for="pub-stato-libro">Condizione del libro *</label>
+            <select id="pub-stato-libro" required>
+              <option value="">Seleziona...</option>
+              <option value="ottimo">Ottimo — come nuovo</option>
+              <option value="buono">Buono — qualche segno d'uso</option>
+              <option value="accettabile">Accettabile — usato ma completo</option>
+              <option value="da_revisionare">Da revisionare — parti danneggiate</option>
+            </select>
+          </div>
+          <div class="form-gruppo" style="grid-column:1/-1">
+            <label for="pub-descrizione">Note per l'acquirente</label>
+            <textarea id="pub-descrizione" placeholder="Descrivi la condizione del libro, eventuali sottolineature, allegati inclusi..."></textarea>
+          </div>
+        </div>
+
+        <div class="form-gruppo">
+          <label>Modalità di pagamento accettate *</label>
+          <div style="display:flex;gap:1.5rem;margin-top:.4rem;flex-wrap:wrap">
+            <label style="display:flex;align-items:center;gap:.4rem;font-weight:400;cursor:pointer">
+              <input type="checkbox" id="pub-pag-online"> 💳 Pagamento online
+            </label>
+            <label style="display:flex;align-items:center;gap:.4rem;font-weight:400;cursor:pointer">
+              <input type="checkbox" id="pub-pag-presenza" checked> 🤝 Pagamento di presenza
+            </label>
+          </div>
+        </div>
+
+        <div class="form-gruppo">
+          <label for="pub-immagine">Foto copertina (facoltativa)</label>
+          <input type="file" id="pub-immagine" accept="image/*" style="font-size:.88rem">
+          <span style="font-size:.8rem;color:var(--grigio-4);display:block;margin-top:.3rem">JPG o PNG, max 5 MB</span>
+        </div>
+
+        <div class="messaggio messaggio-attenzione" style="font-size:.83rem">
+          <span>⚠️</span>
+          <span>Pubblicando l'annuncio dichiari che il libro è di tua proprietà, che le informazioni sono corrette e che lo scambio avverrà a scuola. <a href="#" onclick="mostraPagina('regolamento');return false">Leggi il regolamento completo</a>.</span>
+        </div>
+
+        <button type="submit" class="btn btn-secondario btn-lg btn-blocco">📤 Pubblica l'annuncio</button>
+      </form>
+    </div>
+  </div>
+</main>
+
+<!-- ============================================================
+     AREA UTENTE (venditore + acquirente)
+     ============================================================ -->
+<main id="pag-area-utente" class="pagina" hidden aria-label="La mia area">
+  <div class="container" style="padding:1.5rem 1.25rem 3rem">
+    <h1>Ciao, <span id="area-nome-utente"></span> 👋</h1>
+    <p style="color:var(--testo-muted);margin-bottom:1.5rem">Gestisci i tuoi annunci e le tue prenotazioni.</p>
+
+    <nav class="area-tabs" role="tablist" aria-label="Sezioni area personale">
+      <button class="area-tab attivo" role="tab" data-tab="annunci" onclick="attivaTab('annunci')" aria-selected="true">📚 I miei annunci</button>
+      <button class="area-tab" role="tab" data-tab="prenotazioni" onclick="attivaTab('prenotazioni')" aria-selected="false">🔖 Le mie prenotazioni</button>
+      <button class="area-tab" role="tab" data-tab="profilo" onclick="attivaTab('profilo')" aria-selected="false">👤 Profilo</button>
+    </nav>
+
+    <div id="panel-annunci" class="area-panel visibile" role="tabpanel">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
+        <h3>I miei annunci</h3>
+        <button class="btn btn-secondario btn-sm" onclick="mostraPagina('pubblica')">+ Pubblica nuovo libro</button>
+      </div>
+      <div id="lista-miei-annunci"></div>
+    </div>
+
+    <div id="panel-prenotazioni" class="area-panel" role="tabpanel">
+      <h3 style="margin-bottom:1rem">Le mie prenotazioni</h3>
+      <div id="lista-mie-prenotazioni"></div>
+    </div>
+
+    <div id="panel-profilo" class="area-panel" role="tabpanel">
+      <div class="form-card" style="max-width:480px;margin:0">
+        <h3 style="margin-bottom:1.25rem">Il mio profilo</h3>
+        <div class="scheda-dati-list" id="profilo-dati"></div>
+        <button class="btn btn-danger btn-sm" onclick="logout()" style="margin-top:1.25rem">Esci dall'account</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- ============================================================
+     ADMIN DASHBOARD
+     ============================================================ -->
+<main id="pag-admin" class="pagina" hidden aria-label="Pannello amministratore">
+  <div class="container" style="padding:1.5rem 1.25rem 3rem">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
+      <div>
+        <h1>Dashboard admin</h1>
+        <p style="color:var(--testo-muted)">Moderazione e gestione del mercatino scolastico</p>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="caricaAdmin()">↻ Aggiorna</button>
+    </div>
+
+    <!-- Statistiche -->
+    <div class="admin-stats">
+      <div class="stat-card">
+        <div class="stat-num" id="admin-stat-annunci">—</div>
+        <div class="stat-label">Annunci totali</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="admin-stat-disponibili">—</div>
+        <div class="stat-label">Disponibili ora</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="admin-stat-prenotazioni">—</div>
+        <div class="stat-label">Prenotazioni attive</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="admin-stat-segnalazioni">—</div>
+        <div class="stat-label">Segnalazioni</div>
+      </div>
+    </div>
+
+    <!-- Tabs admin -->
+    <nav class="area-tabs" role="tablist">
+      <button class="area-tab attivo" role="tab" data-tab="admin-annunci" onclick="attivaTabAdmin('annunci')" aria-selected="true">📚 Annunci</button>
+      <button class="area-tab" role="tab" data-tab="admin-segnalazioni-tab" onclick="attivaTabAdmin('segnalazioni')" aria-selected="false">🚩 Segnalazioni</button>
+      <button class="area-tab" role="tab" data-tab="admin-utenti" onclick="attivaTabAdmin('utenti')" aria-selected="false">👥 Utenti</button>
+    </nav>
+
+    <div id="panel-admin-annunci" class="area-panel visibile" role="tabpanel">
+      <div id="admin-lista-annunci"></div>
+    </div>
+    <div id="panel-admin-segnalazioni" class="area-panel" role="tabpanel">
+      <div id="admin-segnalazioni"></div>
+    </div>
+    <div id="panel-admin-utenti" class="area-panel" role="tabpanel">
+      <div id="admin-lista-utenti"></div>
+    </div>
+  </div>
+</main>
+
+<!-- ============================================================
+     REGOLAMENTO
+     ============================================================ -->
+<main id="pag-regolamento" class="pagina" hidden aria-label="Regolamento del mercatino">
+  <div class="container">
+    <article class="pagina-info">
+      <h1>📋 Regolamento del mercatino</h1>
+      <p style="font-size:1rem;color:var(--testo-muted)"><em>Ultima modifica: settembre 2024</em></p>
+
+      <div class="messaggio messaggio-info">
+        <span>ℹ️</span>
+        <span>Questa piattaforma facilita l'incontro tra studenti che vogliono scambiarsi libri scolastici usati. La scuola ospita il servizio ma <strong>non è responsabile delle singole transazioni</strong> tra privati.</span>
+      </div>
+
+      <h2>1. Chi può usare il mercatino</h2>
+      <p>Il servizio è riservato agli studenti, alle famiglie e al personale dell'istituto. L'accesso richiede la registrazione con un'email scolastica valida. Non è consentito l'uso a persone esterne alla comunità scolastica.</p>
+
+      <h2>2. Cosa si può pubblicare</h2>
+      <p>Sono ammessi esclusivamente libri scolastici adottati o adottabili dall'istituto. Non è consentita la vendita di materiali diversi (cartoleria, dispositivi elettronici, ecc.). Il venditore dichiara che il libro è di sua legittima proprietà.</p>
+
+      <h2>3. Accuratezza delle informazioni</h2>
+      <ul>
+        <li>Il titolo, l'ISBN e l'editore devono essere quelli reali del volume.</li>
+        <li>La condizione del libro deve essere descritta onestamente.</li>
+        <li>Il prezzo deve essere coerente con le condizioni dichiarate.</li>
+        <li>Gli annunci con informazioni false o fuorvianti saranno rimossi.</li>
+      </ul>
+
+      <h2>4. Prenotazione e pagamento</h2>
+      <p>Una volta effettuata la prenotazione, il venditore riceve una notifica e può accettare o rifiutare entro 48 ore. Se il venditore non risponde, la prenotazione decade automaticamente. Il pagamento può avvenire in due modalità:</p>
+      <ul>
+        <li><strong>Online:</strong> tramite il sistema di pagamento integrato, sicuro e tracciabile.</li>
+        <li><strong>Di presenza:</strong> in contanti al momento dello scambio fisico a scuola.</li>
+      </ul>
+
+      <h2>5. Lo scambio fisico</h2>
+      <p>Lo scambio del libro avviene <strong>sempre all'interno della scuola</strong>, nei luoghi indicati dalla piattaforma (ingresso, atrio, biblioteca). Non sono consentiti appuntamenti al di fuori dell'edificio scolastico. Dopo lo scambio, il venditore deve confermare la consegna tramite la piattaforma.</p>
+
+      <h2>6. Responsabilità degli utenti</h2>
+      <p>Ogni utente è responsabile delle informazioni che pubblica e della correttezza delle transazioni. La piattaforma è uno strumento di incontro: <strong>non garantisce la qualità dei libri</strong> né l'esito delle transazioni tra privati. In caso di controversie, le parti sono incoraggiate a risolverle direttamente, eventualmente coinvolgendo un docente o il personale scolastico.</p>
+
+      <h2>7. Comportamento vietato</h2>
+      <ul>
+        <li>Pubblicare annunci duplicati per lo stesso libro.</li>
+        <li>Inserire prezzi gonfiati o informazioni false sulle condizioni.</li>
+        <li>Contattare altri utenti al di fuori della piattaforma senza consenso.</li>
+        <li>Usare il sistema per scopi non scolastici.</li>
+      </ul>
+
+      <h2>8. Segnalazioni e moderazione</h2>
+      <p>Gli utenti possono segnalare annunci problematici tramite il pulsante "Segnala". Il team di moderazione verificherà e, se necessario, rimuoverà i contenuti non conformi. Abusi ripetuti porteranno alla sospensione dell'account.</p>
+
+      <h2>9. Sicurezza dei dati</h2>
+      <p>I dati personali degli utenti sono trattati nel rispetto del GDPR. Non vengono mai pubblicati numeri di telefono o indirizzi personali. Per i dettagli, consulta la <a href="#" onclick="mostraPagina('privacy');return false">Pagina Privacy</a>.</p>
+    </article>
+  </div>
+</main>
+
+<!-- ============================================================
+     PRIVACY
+     ============================================================ -->
+<main id="pag-privacy" class="pagina" hidden aria-label="Informativa privacy">
+  <div class="container">
+    <article class="pagina-info">
+      <h1>🔒 Informativa sulla privacy</h1>
+      <p style="font-size:1rem;color:var(--testo-muted)"><em>Ai sensi del Regolamento UE 2016/679 (GDPR) — Ultima modifica: settembre 2024</em></p>
+
+      <h2>Chi tratta i tuoi dati</h2>
+      <p>Il titolare del trattamento è l'istituto scolastico che gestisce questa piattaforma. I dati sono trattati esclusivamente per le finalità legate al funzionamento del mercatino scolastico.</p>
+
+      <h2>Quali dati raccogliamo</h2>
+      <ul>
+        <li>Nome, cognome e indirizzo email scolastico al momento della registrazione.</li>
+        <li>Classe e indirizzo di studio, utili per abbinare i libri rilevanti.</li>
+        <li>Dati degli annunci pubblicati (titolo, prezzo, condizioni del libro).</li>
+        <li>Dati delle prenotazioni (libro prenotato, metodo di pagamento scelto, luogo di scambio).</li>
+      </ul>
+
+      <h2>Come usiamo i tuoi dati</h2>
+      <ul>
+        <li>Per gestire il tuo account e i tuoi annunci.</li>
+        <li>Per permettere ad altri studenti di contattarti (solo tramite il sistema).</li>
+        <li>Per organizzare lo scambio fisico a scuola.</li>
+        <li>Per inviare notifiche relative alle tue prenotazioni o annunci.</li>
+      </ul>
+
+      <h2>Cosa NON facciamo</h2>
+      <ul>
+        <li><strong>Non vendiamo</strong> i tuoi dati a terzi.</li>
+        <li><strong>Non pubblichiamo</strong> il tuo numero di telefono o indirizzo personale.</li>
+        <li><strong>Non usiamo</strong> i tuoi dati per pubblicità commerciali.</li>
+        <li><strong>Non condividiamo</strong> le tue informazioni fuori dalla comunità scolastica.</li>
+      </ul>
+
+      <h2>Per quanto tempo conserviamo i dati</h2>
+      <p>I dati dell'account sono conservati per la durata della tua iscrizione scolastica. Gli annunci chiusi vengono anonimizzati dopo 12 mesi. Puoi richiedere la cancellazione dei tuoi dati in qualsiasi momento.</p>
+
+      <h2>I tuoi diritti</h2>
+      <p>Hai il diritto di accedere ai tuoi dati, correggerli, cancellarli, opporti al loro trattamento e richiedere la portabilità. Per esercitare questi diritti, contatta la segreteria scolastica o scrivi all'indirizzo email dell'istituto.</p>
+
+      <h2>Cookie</h2>
+      <p>Questa piattaforma usa solo cookie tecnici essenziali al funzionamento (sessione utente). Non sono presenti cookie di profilazione o di terze parti a scopi pubblicitari.</p>
+
+      <h2>Sicurezza</h2>
+      <p>I dati sono protetti tramite crittografia HTTPS. I pagamenti online, quando disponibili, transitano attraverso provider certificati PCI DSS. Non conserviamo dati delle carte di credito sui nostri server.</p>
+
+      <div class="messaggio messaggio-info">
+        <span>📧</span>
+        <span>Per domande sulla privacy o per esercitare i tuoi diritti, contatta la segreteria scolastica. Risponderemo entro 30 giorni come previsto dal GDPR.</span>
+      </div>
+    </article>
+  </div>
+</main>
+
+<!-- ============================================================
+     FOOTER
+     ============================================================ -->
+<footer role="contentinfo">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand">📚 Mercatino Libri</div>
+      <p style="font-size:.85rem">Il mercatino scolastico per scambiarsi libri usati in modo semplice e sicuro, tra compagni di scuola.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Navigazione</h4>
+      <a href="#" onclick="mostraPagina('home');return false">Home</a>
+      <a href="#" onclick="mostraPagina('catalogo');caricaCatalogo();return false">Catalogo libri</a>
+      <a href="#" onclick="mostraPagina('pubblica');return false">Pubblica un libro</a>
+      <a href="#" onclick="mostraPagina('area-utente');return false">La mia area</a>
+    </div>
+    <div class="footer-col">
+      <h4>Informazioni</h4>
+      <a href="#" onclick="mostraPagina('regolamento');return false">Regolamento</a>
+      <a href="#" onclick="mostraPagina('privacy');return false">Privacy</a>
+    </div>
+    <div class="footer-col">
+      <h4>Sicurezza</h4>
+      <p style="font-size:.82rem;color:rgba(255,255,255,.5)">🔒 Usa solo metodi tracciabili.<br>Lo scambio avviene sempre a scuola.<br>Non condividere dati personali fuori dalla piattaforma.</p>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2024 Mercatino Libri Usati Scuola — Servizio a uso interno dell'istituto</p>
+    <div class="footer-disclaimer">
+      Questa piattaforma facilita l'incontro tra studenti per lo scambio di libri usati. La scuola ospita il servizio ma non è responsabile delle singole transazioni tra privati. Gli scambi avvengono sempre all'interno dell'edificio scolastico.
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================
+     MODALI
+     ============================================================ -->
+
+<!-- Modal Login -->
+<div class="modal-overlay" id="modal-login" role="dialog" aria-modal="true" aria-labelledby="login-titolo">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="login-titolo">Accedi al tuo account</h2>
+      <button class="modal-close" onclick="chiudiModal('modal-login')" aria-label="Chiudi">✕</button>
+    </div>
+    <form onsubmit="event.preventDefault();eseguitlogin()">
+      <div class="form-gruppo">
+        <label for="login-email">Email scolastica</label>
+        <input type="email" id="login-email" placeholder="nome.cognome@scuola.it" required autocomplete="email">
+      </div>
+      <div class="form-gruppo">
+        <label for="login-pw">Password</label>
+        <input type="password" id="login-pw" placeholder="La tua password" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn btn-primario btn-blocco">Accedi</button>
+    </form>
+    <p style="text-align:center;font-size:.83rem;color:var(--grigio-4);margin-top:1rem">
+      Non hai un account? <a href="#" onclick="chiudiModal('modal-login');apriModal('modal-registrazione');return false">Registrati</a>
+    </p>
+  </div>
+</div>
+
+<!-- Modal Registrazione -->
+<div class="modal-overlay" id="modal-registrazione" role="dialog" aria-modal="true" aria-labelledby="reg-titolo">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="reg-titolo">Crea il tuo account</h2>
+      <button class="modal-close" onclick="chiudiModal('modal-registrazione')" aria-label="Chiudi">✕</button>
+    </div>
+    <form onsubmit="event.preventDefault();mostraToast('Registrazione completata! Controlla la tua email scolastica.',  'ok');chiudiModal('modal-registrazione')">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
+        <div class="form-gruppo">
+          <label for="reg-nome">Nome *</label>
+          <input type="text" id="reg-nome" placeholder="Mario" required>
+        </div>
+        <div class="form-gruppo">
+          <label for="reg-cognome">Cognome *</label>
+          <input type="text" id="reg-cognome" placeholder="Rossi" required>
+        </div>
+      </div>
+      <div class="form-gruppo">
+        <label for="reg-email">Email scolastica *</label>
+        <input type="email" id="reg-email" placeholder="nome.cognome@scuola.it" required autocomplete="email">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
+        <div class="form-gruppo">
+          <label for="reg-classe">Classe</label>
+          <input type="text" id="reg-classe" placeholder="es. 3B">
+        </div>
+        <div class="form-gruppo">
+          <label for="reg-indirizzo">Indirizzo</label>
+          <input type="text" id="reg-indirizzo" placeholder="es. Scientifico">
+        </div>
+      </div>
+      <div class="form-gruppo">
+        <label for="reg-pw">Password * (min. 6 caratteri)</label>
+        <input type="password" id="reg-pw" placeholder="Scegli una password sicura" minlength="6" required autocomplete="new-password">
+      </div>
+      <div class="messaggio messaggio-attenzione" style="font-size:.82rem;margin-bottom:1rem">
+        <span>📋</span>
+        <span>Registrandoti accetti il <a href="#" onclick="chiudiModal('modal-registrazione');mostraPagina('regolamento');return false">Regolamento</a> e la <a href="#" onclick="chiudiModal('modal-registrazione');mostraPagina('privacy');return false">Privacy Policy</a>.</span>
+      </div>
+      <button type="button" class="btn btn-primario btn-blocco" onclick="eseguitRegistrazione()">Crea account</button>
+    </form>
+  </div>
+</div>
+
+
+<!-- Modal Segnalazione -->
+<div class="modal-overlay" id="modal-segnalazione" role="dialog" aria-modal="true" aria-labelledby="seg-titolo">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="seg-titolo">Segnala questo annuncio</h2>
+      <button class="modal-close" onclick="chiudiModal('modal-segnalazione')" aria-label="Chiudi">✕</button>
+    </div>
+    <input type="hidden" id="seg-libro-id">
+    <div class="messaggio messaggio-attenzione" style="margin-bottom:1rem">
+      <span>⚠️</span>
+      <span>Usa questa funzione solo per segnalare annunci con informazioni errate, ISBN sbagliati o comportamenti scorretti.</span>
+    </div>
+    <div class="form-gruppo">
+      <label for="seg-motivo">Descrivi il problema *</label>
+      <textarea id="seg-motivo" placeholder="Es: l'ISBN non corrisponde al titolo indicato. Il libro è di un'edizione diversa..." style="min-height:100px"></textarea>
+    </div>
+    <div style="display:flex;gap:.75rem">
+      <button class="btn btn-ghost" onclick="chiudiModal('modal-segnalazione')" style="flex:1">Annulla</button>
+      <button class="btn btn-danger" onclick="inviaSegnalazioneUI()" style="flex:1">Invia segnalazione</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast container -->
+<div id="toast-container" class="toast-container" aria-live="assertive" role="status"></div>
+
+<!-- Scripts Firebase -->
+<script type="module" src="js/app-firebase.js"></script>
+<script>
+// Inizializzazioni supplementari dopo il DOM
+document.addEventListener('DOMContentLoaded', () => {
+
+  // Mostra libri in home (max 4 disponibili)
+  const libriHome = document.getElementById('libri-home');
+  if (libriHome) {
+    const disponibili = DEMO_DATA.libri.filter(l => l.stato_annuncio === 'disponibile').slice(0, 4);
+    libriHome.innerHTML = disponibili.map(l => cardLibro(l)).join('');
+  }
+
+  // Aggiorna conteggio risultati catalogo
+  const origApplicaFiltri = applicaFiltri;
+  window.applicaFiltri = function() {
+    origApplicaFiltri();
+    const el = document.getElementById('conteggio-risultati');
+    if (el) el.textContent = App.libriVisibili.length
+      ? `${App.libriVisibili.length} libro/i trovato/i`
+      : '';
+  };
+
+  // Profilo dati
+  function aggiornaProfilo() {
+    const el = document.getElementById('profilo-dati');
+    if (!el || !App.utenteCorrente) return;
+    const u = App.utenteCorrente;
+    el.innerHTML = `
+      ${rigaDato('Nome', u.nome + ' ' + u.cognome)}
+      ${rigaDato('Email', u.email)}
+      ${u.classe ? rigaDato('Classe', u.classe) : ''}
+      ${u.indirizzo ? rigaDato('Indirizzo', u.indirizzo) : ''}
+      ${rigaDato('Ruolo', u.ruolo)}
+    `;
+  }
+
+  document.querySelectorAll('.area-tab').forEach(t => {
+    t.addEventListener('click', () => setTimeout(aggiornaProfilo, 50));
+  });
+
+  // Admin tabs
+  window.attivaTabAdmin = function(nome) {
+    document.querySelectorAll('#pag-admin .area-tab').forEach(t => t.classList.remove('attivo'));
+    document.querySelectorAll('#pag-admin .area-panel').forEach(p => p.classList.remove('visibile'));
+    document.querySelector(`#pag-admin .area-tab[data-tab="admin-${nome === 'annunci' ? 'annunci' : nome + '-tab'}"]`)?.classList.add('attivo');
+    document.getElementById('panel-admin-' + nome)?.classList.add('visibile');
+    if (nome === 'utenti') renderAdminUtenti();
+  };
+
+  window.renderAdminUtenti = function() {
+    const el = document.getElementById('admin-lista-utenti');
+    if (!el) return;
+    el.innerHTML = `<div class="tabella-wrap"><table class="tabella">
+      <thead><tr><th>Nome</th><th>Email</th><th>Classe</th><th>Ruolo</th><th>Annunci</th></tr></thead>
+      <tbody>${DEMO_DATA.utenti.map(u => `<tr>
+        <td>${u.nome} ${u.cognome}</td>
+        <td>${u.email}</td>
+        <td>${u.classe || '—'}</td>
+        <td><span class="badge ${u.ruolo==='admin'?'badge-prenotato':'badge-disponibile'}">${u.ruolo}</span></td>
+        <td>${DEMO_DATA.libri.filter(l=>l.venditore_id===u.id).length}</td>
+      </tr>`).join('')}</tbody></table></div>`;
+  };
+
+  // Carica admin se già loggato come admin
+  if (App.utenteCorrente?.ruolo === 'admin') caricaAdmin();
+
+  // Populat select pubblica form
+  const selMatPub = document.getElementById('pub-materia');
+  // already populated via HTML
+});
+</script>
+</body>
+</html>
