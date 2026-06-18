@@ -3,230 +3,137 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Mercatino Libri Usati Scuola — Compra e vendi libri scolastici usati con i tuoi compagni. Semplice, sicuro, a scuola.">
+  <meta name="description" content="Mercatino Libri Usati Scuola — Compra e vendi libri scolastici usati con i tuoi compagni.">
   <title>Mercatino Libri — Scuola</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Sora:wght@700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/stile.css">
+  <link rel="stylesheet" href="stile.css">
 </head>
 <body>
 
-<!-- ============================================================
-     NAVBAR
-     ============================================================ -->
+<!-- ==================== NAVBAR ==================== -->
 <header class="navbar" role="banner">
   <nav class="navbar-inner" aria-label="Navigazione principale">
-    <a href="#home" class="navbar-logo" onclick="mostraPagina('home');return false" aria-label="Mercatino Libri - Home">
+    <a href="#" class="navbar-logo" onclick="mostraPagina('home');return false">
       <span class="logo-icon" aria-hidden="true">📚</span>
       <span>Mercatino Libri</span>
     </a>
-
     <div class="navbar-search" role="search">
       <input type="search" id="cerca-input" placeholder="Cerca titolo, ISBN, materia…"
         aria-label="Cerca libri"
         onkeydown="if(event.key==='Enter')cercaRapido(this.value)">
       <button class="search-btn" onclick="cercaRapido(document.getElementById('cerca-input').value)" aria-label="Cerca">🔍</button>
     </div>
-
     <div class="navbar-actions" id="navbar-utente">
       <button class="btn-nav btn-nav-outline" onclick="apriModal('modal-login')">Accedi</button>
       <button class="btn-nav btn-nav-solid" onclick="apriModal('modal-registrazione')">Registrati</button>
     </div>
   </nav>
-
-  <!-- Barra navigazione secondaria -->
   <div style="background:var(--grigio-1);border-top:1px solid var(--grigio-2)">
-    <div style="max-width:1100px;margin:0 auto;padding:.4rem 1.25rem;display:flex;gap:1.5rem;font-size:.88rem;overflow-x:auto">
-      <a href="#home" onclick="mostraPagina('home');return false" style="color:var(--testo-muted);white-space:nowrap">🏠 Home</a>
-      <a href="#catalogo" onclick="mostraPagina('catalogo');caricaCatalogo();return false" style="color:var(--testo-muted);white-space:nowrap">📖 Catalogo</a>
-      <a href="#pubblica" onclick="mostraPagina('pubblica');return false" style="color:var(--verde);font-weight:600;white-space:nowrap">+ Vendi un libro</a>
-      <a href="#regolamento" onclick="mostraPagina('regolamento');return false" style="color:var(--testo-muted);white-space:nowrap">📋 Regolamento</a>
-      <a href="#privacy" onclick="mostraPagina('privacy');return false" style="color:var(--testo-muted);white-space:nowrap">🔒 Privacy</a>
-
+    <div style="max-width:1100px;margin:0 auto;padding:.4rem 1.25rem;display:flex;gap:1.5rem;font-size:.88rem;overflow-x:auto;align-items:center">
+      <a href="#" onclick="mostraPagina('home');return false" style="color:var(--testo-muted);white-space:nowrap">🏠 Home</a>
+      <a href="#" onclick="mostraPagina('catalogo');return false" style="color:var(--testo-muted);white-space:nowrap">📖 Catalogo</a>
+      <a href="#" onclick="mostraPagina('pubblica');return false" style="color:var(--verde);font-weight:600;white-space:nowrap">+ Vendi un libro</a>
+      <a href="#" onclick="mostraPagina('regolamento');return false" style="color:var(--testo-muted);white-space:nowrap">📋 Regolamento</a>
+      <a href="#" onclick="mostraPagina('privacy');return false" style="color:var(--testo-muted);white-space:nowrap">🔒 Privacy</a>
     </div>
   </div>
 </header>
 
-<!-- ============================================================
-     HOME PAGE
-     ============================================================ -->
+<!-- ==================== HOME ==================== -->
 <main id="pag-home" class="pagina">
-
-  <!-- Hero -->
-  <section class="hero" aria-labelledby="hero-titolo">
+  <section class="hero">
     <div class="container">
-      <h1 id="hero-titolo">Libri usati tra studenti,<br>scambi a scuola.</h1>
-      <p class="hero-sub">Il mercatino scolastico per comprare e vendere libri usati in modo semplice, sicuro e conveniente. Risparmia sulla lista testi, aiuta l'ambiente.</p>
+      <h1>Libri usati tra studenti,<br>scambi a scuola.</h1>
+      <p class="hero-sub">Il mercatino scolastico per comprare e vendere libri usati in modo semplice, sicuro e conveniente.</p>
       <div class="hero-cta">
-        <button class="btn btn-lg btn-hero-primario" onclick="mostraPagina('catalogo');caricaCatalogo()">🔍 Cerca libri</button>
+        <button class="btn btn-lg btn-hero-primario" onclick="mostraPagina('catalogo')">🔍 Cerca libri</button>
         <button class="btn btn-lg btn-hero-outline" onclick="mostraPagina('pubblica')">📤 Vendi un libro</button>
       </div>
     </div>
   </section>
 
-  <!-- Come funziona -->
-  <section class="section" style="background:var(--bianco)" aria-labelledby="come-funziona">
+  <section class="section" style="background:var(--bianco)">
     <div class="container">
-      <div class="section-title">
-        <h2 id="come-funziona">Come funziona</h2>
-        <p>Tre passi semplici per trovare o vendere il tuo libro</p>
-      </div>
+      <div class="section-title"><h2>Come funziona</h2><p>Tre passi semplici</p></div>
       <div class="steps-grid">
-        <div class="step-card">
-          <div class="step-num">1</div>
-          <h3>Pubblica il libro</h3>
-          <p>Inserisci titolo, ISBN, foto e prezzo. Il tuo annuncio sarà visibile subito a tutti gli studenti della scuola.</p>
-        </div>
-        <div class="step-card">
-          <div class="step-num">2</div>
-          <h3>Prenota e paga</h3>
-          <p>Trova il libro che ti serve, prenotalo e scegli se pagare online in modo sicuro o direttamente di persona.</p>
-        </div>
-        <div class="step-card">
-          <div class="step-num">3</div>
-          <h3>Scambia a scuola</h3>
-          <p>Vi incontrate nell'atrio, in biblioteca o all'ingresso. Il venditore conferma la consegna e l'annuncio si chiude.</p>
-        </div>
+        <div class="step-card"><div class="step-num">1</div><h3>Pubblica il libro</h3><p>Inserisci titolo, ISBN, foto e prezzo. L'annuncio è visibile subito.</p></div>
+        <div class="step-card"><div class="step-num">2</div><h3>Prenota e paga</h3><p>Trova il libro, prenotalo e scegli come pagare: online o di persona.</p></div>
+        <div class="step-card"><div class="step-num">3</div><h3>Scambia a scuola</h3><p>Vi incontrate nell'atrio o in biblioteca. Semplice e sicuro.</p></div>
       </div>
     </div>
   </section>
 
-  <!-- Vantaggi -->
-  <section class="section" aria-labelledby="vantaggi-titolo">
+  <section class="section">
     <div class="container">
-      <div class="section-title">
-        <h2 id="vantaggi-titolo">Perché usare il mercatino</h2>
+      <div class="section-title"><h2>Libri disponibili ora</h2></div>
+      <div id="libri-home" class="libri-grid">
+        <p style="color:var(--testo-muted)">Caricamento…</p>
       </div>
-      <div class="vantaggi-grid">
-        <div class="vantaggio-card">
-          <span class="vantaggio-icon">💰</span>
-          <div>
-            <h3>Risparmia sulla lista testi</h3>
-            <p>I libri usati costano mediamente il 50–70% in meno. Ogni anno la spesa può ridursi di centinaia di euro.</p>
-          </div>
-        </div>
-        <div class="vantaggio-card">
-          <span class="vantaggio-icon">🌱</span>
-          <div>
-            <h3>Fa bene all'ambiente</h3>
-            <p>Ogni libro riusato è un libro in meno da produrre. Un piccolo gesto, un grande impatto collettivo.</p>
-          </div>
-        </div>
-        <div class="vantaggio-card">
-          <span class="vantaggio-icon">🔒</span>
-          <div>
-            <h3>Scambi sicuri a scuola</h3>
-            <p>Lo scambio avviene sempre a scuola, in un luogo conosciuto. Nessun incontro con sconosciuti fuori dall'istituto.</p>
-          </div>
-        </div>
-        <div class="vantaggio-card">
-          <span class="vantaggio-icon">📱</span>
-          <div>
-            <h3>Semplice da usare</h3>
-            <p>Funziona da smartphone, tablet o PC. Pubblica un annuncio in pochi minuti, senza complicazioni.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Ultimi libri disponibili -->
-  <section class="section" style="background:var(--bianco)" aria-labelledby="ultimi-titolo">
-    <div class="container">
-      <div class="section-title">
-        <h2 id="ultimi-titolo">Libri disponibili ora</h2>
-        <p>Gli annunci più recenti pubblicati dai tuoi compagni</p>
-      </div>
-      <div id="libri-home" class="libri-grid"></div>
       <div style="text-align:center;margin-top:1.75rem">
-        <button class="btn btn-outline btn-lg" onclick="mostraPagina('catalogo');caricaCatalogo()">Vedi tutto il catalogo →</button>
+        <button class="btn btn-outline btn-lg" onclick="mostraPagina('catalogo')">Vedi tutto il catalogo →</button>
       </div>
     </div>
   </section>
 
-  <!-- CTA finale -->
-  <section class="cta-strip" aria-labelledby="cta-titolo">
+  <section class="cta-strip">
     <div class="container">
-      <h2 id="cta-titolo">Hai libri da vendere?</h2>
-      <p>Pubblica il tuo annuncio gratis in pochi minuti. Migliaia di studenti potrebbero cercare proprio i tuoi libri.</p>
+      <h2>Hai libri da vendere?</h2>
+      <p>Pubblica il tuo annuncio gratis in pochi minuti.</p>
       <button class="btn btn-primario btn-lg" onclick="mostraPagina('pubblica')">📤 Pubblica il tuo primo libro</button>
     </div>
   </section>
-
 </main>
 
-<!-- ============================================================
-     CATALOGO
-     ============================================================ -->
-<main id="pag-catalogo" class="pagina" hidden aria-label="Catalogo libri">
+<!-- ==================== CATALOGO ==================== -->
+<main id="pag-catalogo" class="pagina" hidden>
   <div class="container">
     <h1 style="padding:1.5rem 0 .5rem">Catalogo libri</h1>
-
-    <!-- Filtro stato annuncio rapido -->
     <div style="display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem">
-      <button class="btn btn-sm btn-primario" onclick="document.getElementById('filtro-stato-annuncio').value='disponibile';applicaFiltri()">✓ Disponibili</button>
-      <button class="btn btn-sm btn-ghost" onclick="document.getElementById('filtro-stato-annuncio').value='';applicaFiltri()">Tutti</button>
-      <button class="btn btn-sm btn-ghost" onclick="document.getElementById('filtro-stato-annuncio').value='prenotato';applicaFiltri()">⏳ Prenotati</button>
+      <button class="btn btn-sm btn-primario" onclick="impostaFiltroStato('disponibile')">✓ Disponibili</button>
+      <button class="btn btn-sm btn-ghost" onclick="impostaFiltroStato('')">Tutti</button>
+      <button class="btn btn-sm btn-ghost" onclick="impostaFiltroStato('prenotato')">⏳ Prenotati</button>
     </div>
-
     <div class="catalogo-layout">
-      <!-- Pannello filtri -->
-      <aside id="pannello-filtri" class="filtri-panel" aria-label="Filtri ricerca">
+      <aside class="filtri-panel">
         <h3>Filtra</h3>
-
-        <div class="filtro-gruppo">
-          <label for="filtro-titolo">Titolo</label>
-          <input type="text" id="filtro-titolo" placeholder="es. Matematica.blu" oninput="applicaFiltri()">
-        </div>
-        <div class="filtro-gruppo">
-          <label for="filtro-isbn">ISBN</label>
-          <input type="text" id="filtro-isbn" placeholder="978-..." oninput="applicaFiltri()">
-        </div>
-        <div class="filtro-gruppo">
-          <label for="filtro-classe">Classe</label>
-          <select id="filtro-classe" onchange="applicaFiltri()">
-            <option value="">Tutte le classi</option>
+        <div class="filtro-gruppo"><label>Titolo</label><input type="text" id="f-titolo" placeholder="es. Matematica.blu" oninput="applicaFiltri()"></div>
+        <div class="filtro-gruppo"><label>ISBN</label><input type="text" id="f-isbn" placeholder="978-..." oninput="applicaFiltri()"></div>
+        <div class="filtro-gruppo"><label>Classe</label>
+          <select id="f-classe" onchange="applicaFiltri()">
+            <option value="">Tutte</option>
+            <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
           </select>
         </div>
-        <div class="filtro-gruppo">
-          <label for="filtro-indirizzo">Indirizzo</label>
-          <select id="filtro-indirizzo" onchange="applicaFiltri()">
-            <option value="">Tutti gli indirizzi</option>
+        <div class="filtro-gruppo"><label>Indirizzo</label>
+          <select id="f-indirizzo" onchange="applicaFiltri()">
+            <option value="">Tutti</option>
+            <option>Scientifico</option><option>Classico</option><option>Linguistico</option>
+            <option>Liceo delle Scienze Umane</option><option>Tecnico Economico</option><option>Tecnico Tecnologico</option>
           </select>
         </div>
-        <div class="filtro-gruppo">
-          <label for="filtro-materia">Materia</label>
-          <select id="filtro-materia" onchange="applicaFiltri()">
-            <option value="">Tutte le materie</option>
+        <div class="filtro-gruppo"><label>Materia</label>
+          <select id="f-materia" onchange="applicaFiltri()">
+            <option value="">Tutte</option>
+            <option>Italiano</option><option>Latino</option><option>Greco</option><option>Matematica</option>
+            <option>Fisica</option><option>Scienze</option><option>Storia</option><option>Filosofia</option>
+            <option>Inglese</option><option>Arte</option><option>Storia dell'arte</option>
+            <option>Informatica</option><option>Diritto</option><option>Economia</option>
           </select>
         </div>
-        <div class="filtro-gruppo">
-          <label for="filtro-stato-libro">Condizione libro</label>
-          <select id="filtro-stato-libro" onchange="applicaFiltri()">
-            <option value="">Qualsiasi condizione</option>
+        <div class="filtro-gruppo"><label>Condizione</label>
+          <select id="f-stato-libro" onchange="applicaFiltri()">
+            <option value="">Qualsiasi</option>
+            <option value="ottimo">Ottimo</option><option value="buono">Buono</option>
+            <option value="accettabile">Accettabile</option><option value="da_revisionare">Da revisionare</option>
           </select>
         </div>
-        <div class="filtro-gruppo">
-          <label for="filtro-prezzo-max">Prezzo massimo (€)</label>
-          <input type="number" id="filtro-prezzo-max" placeholder="es. 15" min="0" oninput="applicaFiltri()">
-        </div>
-
-        <!-- nascosto ma usato via JS -->
-        <select id="filtro-stato-annuncio" style="display:none" onchange="applicaFiltri()">
-          <option value="">Tutti</option>
-          <option value="disponibile" selected>Disponibile</option>
-          <option value="prenotato">Prenotato</option>
-          <option value="venduto">Venduto</option>
-        </select>
-
-        <div class="filtri-azioni">
-          <button class="btn btn-ghost btn-sm" onclick="resetFiltri()" style="flex:1">Reset filtri</button>
-        </div>
+        <div class="filtro-gruppo"><label>Prezzo max (€)</label><input type="number" id="f-prezzo-max" placeholder="es. 15" min="0" oninput="applicaFiltri()"></div>
+        <input type="hidden" id="f-stato-annuncio" value="disponibile">
+        <div class="filtri-azioni"><button class="btn btn-ghost btn-sm" onclick="resetFiltri()" style="flex:1">Reset</button></div>
       </aside>
-
-      <!-- Griglia risultati -->
-      <section aria-live="polite" aria-label="Risultati ricerca">
+      <section aria-live="polite">
         <p id="conteggio-risultati" style="font-size:.88rem;color:var(--testo-muted);margin-bottom:.75rem"></p>
         <div id="griglia-libri" class="libri-grid"></div>
       </section>
@@ -234,463 +141,212 @@
   </div>
 </main>
 
-<!-- ============================================================
-     SCHEDA DETTAGLIO LIBRO
-     ============================================================ -->
-<main id="pag-scheda-libro" class="pagina" hidden aria-label="Dettaglio libro">
+<!-- ==================== SCHEDA LIBRO ==================== -->
+<main id="pag-scheda-libro" class="pagina" hidden>
   <div id="scheda-contenuto"></div>
 </main>
 
-<!-- ============================================================
-     FLUSSO PRENOTAZIONE
-     ============================================================ -->
-<main id="pag-prenotazione" class="pagina" hidden aria-label="Prenota libro">
+<!-- ==================== PRENOTAZIONE ==================== -->
+<main id="pag-prenotazione" class="pagina" hidden>
   <div class="container" style="padding:2rem 1.25rem">
     <nav class="breadcrumb">
-      <a href="#" onclick="mostraPagina('catalogo');return false">Catalogo</a>
-      <span>›</span>
-      <span>Prenotazione</span>
+      <a href="#" onclick="mostraPagina('catalogo');return false">Catalogo</a><span>›</span><span>Prenotazione</span>
     </nav>
     <div id="form-prenotazione"></div>
   </div>
 </main>
 
-<!-- ============================================================
-     PUBBLICA LIBRO
-     ============================================================ -->
-<main id="pag-pubblica" class="pagina" hidden aria-label="Pubblica un libro">
+<!-- ==================== PUBBLICA ==================== -->
+<main id="pag-pubblica" class="pagina" hidden>
   <div class="container" style="padding:2rem 1.25rem">
-    <nav class="breadcrumb">
-      <a href="#" onclick="mostraPagina('home');return false">Home</a>
-      <span>›</span>
-      <span>Pubblica un libro</span>
-    </nav>
-
+    <nav class="breadcrumb"><a href="#" onclick="mostraPagina('home');return false">Home</a><span>›</span><span>Pubblica un libro</span></nav>
     <div class="form-card" style="max-width:640px">
       <h2>Pubblica il tuo libro</h2>
-      <p style="color:var(--testo-muted);margin-bottom:1.5rem;font-size:.93rem">Inserisci i dati del libro che vuoi vendere. L'annuncio sarà visibile subito agli altri studenti.</p>
-
+      <p style="color:var(--testo-muted);margin-bottom:1.5rem;font-size:.93rem">Inserisci i dati del libro che vuoi vendere.</p>
       <form id="form-pubblica" onsubmit="inviaAnnuncio(event)" novalidate>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
-          <div class="form-gruppo" style="grid-column:1/-1">
-            <label for="pub-titolo">Titolo del libro *</label>
-            <input type="text" id="pub-titolo" placeholder="es. Matematica.blu 4" required>
-          </div>
-          <div class="form-gruppo" style="grid-column:1/-1">
-            <label for="pub-autore">Autore/i *</label>
-            <input type="text" id="pub-autore" placeholder="es. Bergamini, Trifone, Barozzi" required>
-          </div>
-          <div class="form-gruppo">
-            <label for="pub-isbn">ISBN</label>
-            <input type="text" id="pub-isbn" placeholder="978-...">
-          </div>
-          <div class="form-gruppo">
-            <label for="pub-editore">Editore</label>
-            <input type="text" id="pub-editore" placeholder="es. Zanichelli">
-          </div>
-          <div class="form-gruppo">
-            <label for="pub-materia">Materia *</label>
+          <div class="form-gruppo" style="grid-column:1/-1"><label>Titolo *</label><input type="text" id="pub-titolo" placeholder="es. Matematica.blu 4" required></div>
+          <div class="form-gruppo" style="grid-column:1/-1"><label>Autore/i *</label><input type="text" id="pub-autore" placeholder="es. Bergamini, Trifone" required></div>
+          <div class="form-gruppo"><label>ISBN</label><input type="text" id="pub-isbn" placeholder="978-..."></div>
+          <div class="form-gruppo"><label>Editore</label><input type="text" id="pub-editore" placeholder="es. Zanichelli"></div>
+          <div class="form-gruppo"><label>Materia *</label>
             <select id="pub-materia" required>
               <option value="">Seleziona...</option>
-              <option>Italiano</option><option>Latino</option><option>Greco</option>
-              <option>Matematica</option><option>Fisica</option><option>Scienze</option>
-              <option>Storia</option><option>Filosofia</option><option>Inglese</option>
-              <option>Arte</option><option>Storia dell'arte</option><option>Informatica</option>
-              <option>Diritto</option><option>Economia</option>
+              <option>Italiano</option><option>Latino</option><option>Greco</option><option>Matematica</option>
+              <option>Fisica</option><option>Scienze</option><option>Storia</option><option>Filosofia</option>
+              <option>Inglese</option><option>Arte</option><option>Storia dell'arte</option>
+              <option>Informatica</option><option>Diritto</option><option>Economia</option>
             </select>
           </div>
-          <div class="form-gruppo">
-            <label for="pub-classe">Classe *</label>
+          <div class="form-gruppo"><label>Classe *</label>
             <select id="pub-classe" required>
               <option value="">Seleziona...</option>
               <option>1</option><option>2</option><option>3</option><option>4</option><option>5</option>
             </select>
           </div>
-          <div class="form-gruppo" style="grid-column:1/-1">
-            <label for="pub-indirizzo">Indirizzo scolastico *</label>
+          <div class="form-gruppo" style="grid-column:1/-1"><label>Indirizzo *</label>
             <select id="pub-indirizzo" required>
               <option value="">Seleziona...</option>
               <option>Scientifico</option><option>Classico</option><option>Linguistico</option>
-              <option>Liceo delle Scienze Umane</option><option>Tecnico Economico</option>
-              <option>Tecnico Tecnologico</option>
+              <option>Liceo delle Scienze Umane</option><option>Tecnico Economico</option><option>Tecnico Tecnologico</option>
             </select>
           </div>
-          <div class="form-gruppo">
-            <label for="pub-prezzo">Prezzo (€) *</label>
-            <input type="number" id="pub-prezzo" placeholder="es. 10" min="0" step="0.50" required>
-          </div>
-          <div class="form-gruppo">
-            <label for="pub-stato-libro">Condizione del libro *</label>
+          <div class="form-gruppo"><label>Prezzo (€) *</label><input type="number" id="pub-prezzo" placeholder="es. 10" min="0" step="0.50" required></div>
+          <div class="form-gruppo"><label>Condizione *</label>
             <select id="pub-stato-libro" required>
               <option value="">Seleziona...</option>
               <option value="ottimo">Ottimo — come nuovo</option>
               <option value="buono">Buono — qualche segno d'uso</option>
               <option value="accettabile">Accettabile — usato ma completo</option>
-              <option value="da_revisionare">Da revisionare — parti danneggiate</option>
+              <option value="da_revisionare">Da revisionare</option>
             </select>
           </div>
-          <div class="form-gruppo" style="grid-column:1/-1">
-            <label for="pub-descrizione">Note per l'acquirente</label>
-            <textarea id="pub-descrizione" placeholder="Descrivi la condizione del libro, eventuali sottolineature, allegati inclusi..."></textarea>
-          </div>
+          <div class="form-gruppo" style="grid-column:1/-1"><label>Note per l'acquirente</label><textarea id="pub-descrizione" placeholder="Descrivi le condizioni, eventuali sottolineature..."></textarea></div>
         </div>
-
         <div class="form-gruppo">
-          <label>Modalità di pagamento accettate *</label>
+          <label>Modalità di pagamento accettate</label>
           <div style="display:flex;gap:1.5rem;margin-top:.4rem;flex-wrap:wrap">
-            <label style="display:flex;align-items:center;gap:.4rem;font-weight:400;cursor:pointer">
-              <input type="checkbox" id="pub-pag-online"> 💳 Pagamento online
-            </label>
-            <label style="display:flex;align-items:center;gap:.4rem;font-weight:400;cursor:pointer">
-              <input type="checkbox" id="pub-pag-presenza" checked> 🤝 Pagamento di presenza
-            </label>
+            <label style="display:flex;align-items:center;gap:.4rem;font-weight:400;cursor:pointer"><input type="checkbox" id="pub-pag-online"> 💳 Online</label>
+            <label style="display:flex;align-items:center;gap:.4rem;font-weight:400;cursor:pointer"><input type="checkbox" id="pub-pag-presenza" checked> 🤝 Di presenza</label>
           </div>
         </div>
-
-        <div class="form-gruppo">
-          <label for="pub-immagine">Foto copertina (facoltativa)</label>
-          <input type="file" id="pub-immagine" accept="image/*" style="font-size:.88rem">
-          <span style="font-size:.8rem;color:var(--grigio-4);display:block;margin-top:.3rem">JPG o PNG, max 5 MB</span>
-        </div>
-
         <div class="messaggio messaggio-attenzione" style="font-size:.83rem">
-          <span>⚠️</span>
-          <span>Pubblicando l'annuncio dichiari che il libro è di tua proprietà, che le informazioni sono corrette e che lo scambio avverrà a scuola. <a href="#" onclick="mostraPagina('regolamento');return false">Leggi il regolamento completo</a>.</span>
+          <span>⚠️</span><span>Pubblicando dichiari che il libro è di tua proprietà e che lo scambio avverrà a scuola.</span>
         </div>
-
         <button type="submit" class="btn btn-secondario btn-lg btn-blocco">📤 Pubblica l'annuncio</button>
       </form>
     </div>
   </div>
 </main>
 
-<!-- ============================================================
-     AREA UTENTE (venditore + acquirente)
-     ============================================================ -->
-<main id="pag-area-utente" class="pagina" hidden aria-label="La mia area">
+<!-- ==================== AREA UTENTE ==================== -->
+<main id="pag-area-utente" class="pagina" hidden>
   <div class="container" style="padding:1.5rem 1.25rem 3rem">
     <h1>Ciao, <span id="area-nome-utente"></span> 👋</h1>
     <p style="color:var(--testo-muted);margin-bottom:1.5rem">Gestisci i tuoi annunci e le tue prenotazioni.</p>
-
-    <nav class="area-tabs" role="tablist" aria-label="Sezioni area personale">
-      <button class="area-tab attivo" role="tab" data-tab="annunci" onclick="attivaTab('annunci')" aria-selected="true">📚 I miei annunci</button>
-      <button class="area-tab" role="tab" data-tab="prenotazioni" onclick="attivaTab('prenotazioni')" aria-selected="false">🔖 Le mie prenotazioni</button>
-      <button class="area-tab" role="tab" data-tab="profilo" onclick="attivaTab('profilo')" aria-selected="false">👤 Profilo</button>
+    <nav class="area-tabs">
+      <button class="area-tab attivo" data-tab="annunci" onclick="attivaTab('annunci')">📚 I miei annunci</button>
+      <button class="area-tab" data-tab="prenotazioni" onclick="attivaTab('prenotazioni')">🔖 Le mie prenotazioni</button>
+      <button class="area-tab" data-tab="profilo" onclick="attivaTab('profilo')">👤 Profilo</button>
     </nav>
-
-    <div id="panel-annunci" class="area-panel visibile" role="tabpanel">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem">
-        <h3>I miei annunci</h3>
-        <button class="btn btn-secondario btn-sm" onclick="mostraPagina('pubblica')">+ Pubblica nuovo libro</button>
-      </div>
-      <div id="lista-miei-annunci"></div>
-    </div>
-
-    <div id="panel-prenotazioni" class="area-panel" role="tabpanel">
-      <h3 style="margin-bottom:1rem">Le mie prenotazioni</h3>
-      <div id="lista-mie-prenotazioni"></div>
-    </div>
-
-    <div id="panel-profilo" class="area-panel" role="tabpanel">
-      <div class="form-card" style="max-width:480px;margin:0">
-        <h3 style="margin-bottom:1.25rem">Il mio profilo</h3>
-        <div class="scheda-dati-list" id="profilo-dati"></div>
-        <button class="btn btn-danger btn-sm" onclick="logout()" style="margin-top:1.25rem">Esci dall'account</button>
-      </div>
-    </div>
+    <div id="panel-annunci" class="area-panel visibile"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:.5rem"><h3>I miei annunci</h3><button class="btn btn-secondario btn-sm" onclick="mostraPagina('pubblica')">+ Pubblica libro</button></div><div id="lista-miei-annunci"></div></div>
+    <div id="panel-prenotazioni" class="area-panel"><h3 style="margin-bottom:1rem">Le mie prenotazioni</h3><div id="lista-mie-prenotazioni"></div></div>
+    <div id="panel-profilo" class="area-panel"><div class="form-card" style="max-width:480px;margin:0"><h3 style="margin-bottom:1.25rem">Il mio profilo</h3><div id="profilo-dati"></div><button class="btn btn-danger btn-sm" onclick="eseguiLogout()" style="margin-top:1.25rem">Esci dall'account</button></div></div>
   </div>
 </main>
 
-<!-- ============================================================
-     ADMIN DASHBOARD
-     ============================================================ -->
-<main id="pag-admin" class="pagina" hidden aria-label="Pannello amministratore">
+<!-- ==================== ADMIN ==================== -->
+<main id="pag-admin" class="pagina" hidden>
   <div class="container" style="padding:1.5rem 1.25rem 3rem">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;flex-wrap:wrap;gap:1rem">
-      <div>
-        <h1>Dashboard admin</h1>
-        <p style="color:var(--testo-muted)">Moderazione e gestione del mercatino scolastico</p>
-      </div>
+      <div><h1>Dashboard admin</h1><p style="color:var(--testo-muted)">Moderazione del mercatino</p></div>
       <button class="btn btn-ghost btn-sm" onclick="caricaAdmin()">↻ Aggiorna</button>
     </div>
-
-    <!-- Statistiche -->
     <div class="admin-stats">
-      <div class="stat-card">
-        <div class="stat-num" id="admin-stat-annunci">—</div>
-        <div class="stat-label">Annunci totali</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" id="admin-stat-disponibili">—</div>
-        <div class="stat-label">Disponibili ora</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" id="admin-stat-prenotazioni">—</div>
-        <div class="stat-label">Prenotazioni attive</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" id="admin-stat-segnalazioni">—</div>
-        <div class="stat-label">Segnalazioni</div>
-      </div>
+      <div class="stat-card"><div class="stat-num" id="admin-stat-annunci">—</div><div class="stat-label">Annunci totali</div></div>
+      <div class="stat-card"><div class="stat-num" id="admin-stat-disponibili">—</div><div class="stat-label">Disponibili</div></div>
+      <div class="stat-card"><div class="stat-num" id="admin-stat-prenotazioni">—</div><div class="stat-label">Prenotazioni</div></div>
+      <div class="stat-card"><div class="stat-num" id="admin-stat-segnalazioni">—</div><div class="stat-label">Segnalazioni aperte</div></div>
     </div>
-
-    <!-- Tabs admin -->
-    <nav class="area-tabs" role="tablist">
-      <button class="area-tab attivo" role="tab" data-tab="admin-annunci" onclick="attivaTabAdmin('annunci')" aria-selected="true">📚 Annunci</button>
-      <button class="area-tab" role="tab" data-tab="admin-segnalazioni-tab" onclick="attivaTabAdmin('segnalazioni')" aria-selected="false">🚩 Segnalazioni</button>
-      <button class="area-tab" role="tab" data-tab="admin-utenti" onclick="attivaTabAdmin('utenti')" aria-selected="false">👥 Utenti</button>
+    <nav class="area-tabs">
+      <button class="area-tab attivo" onclick="attivaTabAdmin('annunci')">📚 Annunci</button>
+      <button class="area-tab" onclick="attivaTabAdmin('segnalazioni')">🚩 Segnalazioni</button>
+      <button class="area-tab" onclick="attivaTabAdmin('utenti')">👥 Utenti</button>
     </nav>
-
-    <div id="panel-admin-annunci" class="area-panel visibile" role="tabpanel">
-      <div id="admin-lista-annunci"></div>
-    </div>
-    <div id="panel-admin-segnalazioni" class="area-panel" role="tabpanel">
-      <div id="admin-segnalazioni"></div>
-    </div>
-    <div id="panel-admin-utenti" class="area-panel" role="tabpanel">
-      <div id="admin-lista-utenti"></div>
-    </div>
+    <div id="panel-admin-annunci" class="area-panel visibile"><div id="admin-lista-annunci"></div></div>
+    <div id="panel-admin-segnalazioni" class="area-panel"><div id="admin-segnalazioni"></div></div>
+    <div id="panel-admin-utenti" class="area-panel"><div id="admin-lista-utenti"></div></div>
   </div>
 </main>
 
-<!-- ============================================================
-     REGOLAMENTO
-     ============================================================ -->
-<main id="pag-regolamento" class="pagina" hidden aria-label="Regolamento del mercatino">
-  <div class="container">
-    <article class="pagina-info">
-      <h1>📋 Regolamento del mercatino</h1>
-      <p style="font-size:1rem;color:var(--testo-muted)"><em>Ultima modifica: settembre 2024</em></p>
-
-      <div class="messaggio messaggio-info">
-        <span>ℹ️</span>
-        <span>Questa piattaforma facilita l'incontro tra studenti che vogliono scambiarsi libri scolastici usati. La scuola ospita il servizio ma <strong>non è responsabile delle singole transazioni</strong> tra privati.</span>
-      </div>
-
-      <h2>1. Chi può usare il mercatino</h2>
-      <p>Il servizio è riservato agli studenti, alle famiglie e al personale dell'istituto. L'accesso richiede la registrazione con un'email scolastica valida. Non è consentito l'uso a persone esterne alla comunità scolastica.</p>
-
-      <h2>2. Cosa si può pubblicare</h2>
-      <p>Sono ammessi esclusivamente libri scolastici adottati o adottabili dall'istituto. Non è consentita la vendita di materiali diversi (cartoleria, dispositivi elettronici, ecc.). Il venditore dichiara che il libro è di sua legittima proprietà.</p>
-
-      <h2>3. Accuratezza delle informazioni</h2>
-      <ul>
-        <li>Il titolo, l'ISBN e l'editore devono essere quelli reali del volume.</li>
-        <li>La condizione del libro deve essere descritta onestamente.</li>
-        <li>Il prezzo deve essere coerente con le condizioni dichiarate.</li>
-        <li>Gli annunci con informazioni false o fuorvianti saranno rimossi.</li>
-      </ul>
-
-      <h2>4. Prenotazione e pagamento</h2>
-      <p>Una volta effettuata la prenotazione, il venditore riceve una notifica e può accettare o rifiutare entro 48 ore. Se il venditore non risponde, la prenotazione decade automaticamente. Il pagamento può avvenire in due modalità:</p>
-      <ul>
-        <li><strong>Online:</strong> tramite il sistema di pagamento integrato, sicuro e tracciabile.</li>
-        <li><strong>Di presenza:</strong> in contanti al momento dello scambio fisico a scuola.</li>
-      </ul>
-
-      <h2>5. Lo scambio fisico</h2>
-      <p>Lo scambio del libro avviene <strong>sempre all'interno della scuola</strong>, nei luoghi indicati dalla piattaforma (ingresso, atrio, biblioteca). Non sono consentiti appuntamenti al di fuori dell'edificio scolastico. Dopo lo scambio, il venditore deve confermare la consegna tramite la piattaforma.</p>
-
-      <h2>6. Responsabilità degli utenti</h2>
-      <p>Ogni utente è responsabile delle informazioni che pubblica e della correttezza delle transazioni. La piattaforma è uno strumento di incontro: <strong>non garantisce la qualità dei libri</strong> né l'esito delle transazioni tra privati. In caso di controversie, le parti sono incoraggiate a risolverle direttamente, eventualmente coinvolgendo un docente o il personale scolastico.</p>
-
-      <h2>7. Comportamento vietato</h2>
-      <ul>
-        <li>Pubblicare annunci duplicati per lo stesso libro.</li>
-        <li>Inserire prezzi gonfiati o informazioni false sulle condizioni.</li>
-        <li>Contattare altri utenti al di fuori della piattaforma senza consenso.</li>
-        <li>Usare il sistema per scopi non scolastici.</li>
-      </ul>
-
-      <h2>8. Segnalazioni e moderazione</h2>
-      <p>Gli utenti possono segnalare annunci problematici tramite il pulsante "Segnala". Il team di moderazione verificherà e, se necessario, rimuoverà i contenuti non conformi. Abusi ripetuti porteranno alla sospensione dell'account.</p>
-
-      <h2>9. Sicurezza dei dati</h2>
-      <p>I dati personali degli utenti sono trattati nel rispetto del GDPR. Non vengono mai pubblicati numeri di telefono o indirizzi personali. Per i dettagli, consulta la <a href="#" onclick="mostraPagina('privacy');return false">Pagina Privacy</a>.</p>
-    </article>
-  </div>
+<!-- ==================== REGOLAMENTO ==================== -->
+<main id="pag-regolamento" class="pagina" hidden>
+  <div class="container"><article class="pagina-info">
+    <h1>📋 Regolamento del mercatino</h1>
+    <div class="messaggio messaggio-info"><span>ℹ️</span><span>Questa piattaforma facilita l'incontro tra studenti. La scuola ospita il servizio ma <strong>non è responsabile delle singole transazioni</strong> tra privati.</span></div>
+    <h2>Chi può usare il mercatino</h2><p>Il servizio è riservato agli studenti e alle famiglie dell'istituto. L'accesso richiede la registrazione con un'email valida.</p>
+    <h2>Cosa si può pubblicare</h2><p>Solo libri scolastici adottati o adottabili dall'istituto. Il venditore dichiara che il libro è di sua legittima proprietà.</p>
+    <h2>Accuratezza delle informazioni</h2><ul><li>Titolo, ISBN e editore devono essere quelli reali.</li><li>La condizione del libro deve essere descritta onestamente.</li><li>Gli annunci con informazioni false verranno rimossi.</li></ul>
+    <h2>Lo scambio fisico</h2><p>Lo scambio avviene <strong>sempre all'interno della scuola</strong>. Non sono consentiti appuntamenti fuori dall'edificio scolastico.</p>
+    <h2>Responsabilità</h2><p>Ogni utente è responsabile delle informazioni che pubblica. La piattaforma non garantisce la qualità dei libri né l'esito delle transazioni tra privati.</p>
+    <h2>Segnalazioni</h2><p>Gli utenti possono segnalare annunci problematici. Abusi ripetuti porteranno alla sospensione dell'account.</p>
+  </article></div>
 </main>
 
-<!-- ============================================================
-     PRIVACY
-     ============================================================ -->
-<main id="pag-privacy" class="pagina" hidden aria-label="Informativa privacy">
-  <div class="container">
-    <article class="pagina-info">
-      <h1>🔒 Informativa sulla privacy</h1>
-      <p style="font-size:1rem;color:var(--testo-muted)"><em>Ai sensi del Regolamento UE 2016/679 (GDPR) — Ultima modifica: settembre 2024</em></p>
-
-      <h2>Chi tratta i tuoi dati</h2>
-      <p>Il titolare del trattamento è l'istituto scolastico che gestisce questa piattaforma. I dati sono trattati esclusivamente per le finalità legate al funzionamento del mercatino scolastico.</p>
-
-      <h2>Quali dati raccogliamo</h2>
-      <ul>
-        <li>Nome, cognome e indirizzo email scolastico al momento della registrazione.</li>
-        <li>Classe e indirizzo di studio, utili per abbinare i libri rilevanti.</li>
-        <li>Dati degli annunci pubblicati (titolo, prezzo, condizioni del libro).</li>
-        <li>Dati delle prenotazioni (libro prenotato, metodo di pagamento scelto, luogo di scambio).</li>
-      </ul>
-
-      <h2>Come usiamo i tuoi dati</h2>
-      <ul>
-        <li>Per gestire il tuo account e i tuoi annunci.</li>
-        <li>Per permettere ad altri studenti di contattarti (solo tramite il sistema).</li>
-        <li>Per organizzare lo scambio fisico a scuola.</li>
-        <li>Per inviare notifiche relative alle tue prenotazioni o annunci.</li>
-      </ul>
-
-      <h2>Cosa NON facciamo</h2>
-      <ul>
-        <li><strong>Non vendiamo</strong> i tuoi dati a terzi.</li>
-        <li><strong>Non pubblichiamo</strong> il tuo numero di telefono o indirizzo personale.</li>
-        <li><strong>Non usiamo</strong> i tuoi dati per pubblicità commerciali.</li>
-        <li><strong>Non condividiamo</strong> le tue informazioni fuori dalla comunità scolastica.</li>
-      </ul>
-
-      <h2>Per quanto tempo conserviamo i dati</h2>
-      <p>I dati dell'account sono conservati per la durata della tua iscrizione scolastica. Gli annunci chiusi vengono anonimizzati dopo 12 mesi. Puoi richiedere la cancellazione dei tuoi dati in qualsiasi momento.</p>
-
-      <h2>I tuoi diritti</h2>
-      <p>Hai il diritto di accedere ai tuoi dati, correggerli, cancellarli, opporti al loro trattamento e richiedere la portabilità. Per esercitare questi diritti, contatta la segreteria scolastica o scrivi all'indirizzo email dell'istituto.</p>
-
-      <h2>Cookie</h2>
-      <p>Questa piattaforma usa solo cookie tecnici essenziali al funzionamento (sessione utente). Non sono presenti cookie di profilazione o di terze parti a scopi pubblicitari.</p>
-
-      <h2>Sicurezza</h2>
-      <p>I dati sono protetti tramite crittografia HTTPS. I pagamenti online, quando disponibili, transitano attraverso provider certificati PCI DSS. Non conserviamo dati delle carte di credito sui nostri server.</p>
-
-      <div class="messaggio messaggio-info">
-        <span>📧</span>
-        <span>Per domande sulla privacy o per esercitare i tuoi diritti, contatta la segreteria scolastica. Risponderemo entro 30 giorni come previsto dal GDPR.</span>
-      </div>
-    </article>
-  </div>
+<!-- ==================== PRIVACY ==================== -->
+<main id="pag-privacy" class="pagina" hidden>
+  <div class="container"><article class="pagina-info">
+    <h1>🔒 Informativa sulla privacy</h1>
+    <p style="color:var(--testo-muted)"><em>Ai sensi del Regolamento UE 2016/679 (GDPR)</em></p>
+    <h2>Dati raccolti</h2><ul><li>Nome, cognome e email al momento della registrazione.</li><li>Classe e indirizzo di studio.</li><li>Dati degli annunci pubblicati.</li><li>Dati delle prenotazioni.</li></ul>
+    <h2>Come usiamo i dati</h2><ul><li>Per gestire il tuo account e i tuoi annunci.</li><li>Per organizzare lo scambio fisico a scuola.</li></ul>
+    <h2>Cosa NON facciamo</h2><ul><li>Non vendiamo i tuoi dati a terzi.</li><li>Non pubblichiamo il tuo numero di telefono.</li><li>Non usiamo i dati per pubblicità.</li></ul>
+    <h2>I tuoi diritti</h2><p>Hai il diritto di accedere, correggere e cancellare i tuoi dati. Contatta la segreteria scolastica per esercitare questi diritti.</p>
+  </article></div>
 </main>
 
-<!-- ============================================================
-     FOOTER
-     ============================================================ -->
+<!-- ==================== FOOTER ==================== -->
 <footer role="contentinfo">
   <div class="footer-grid">
-    <div>
-      <div class="footer-brand">📚 Mercatino Libri</div>
-      <p style="font-size:.85rem">Il mercatino scolastico per scambiarsi libri usati in modo semplice e sicuro, tra compagni di scuola.</p>
-    </div>
-    <div class="footer-col">
-      <h4>Navigazione</h4>
+    <div><div class="footer-brand">📚 Mercatino Libri</div><p style="font-size:.85rem">Il mercatino scolastico per scambiarsi libri usati in modo semplice e sicuro.</p></div>
+    <div class="footer-col"><h4>Navigazione</h4>
       <a href="#" onclick="mostraPagina('home');return false">Home</a>
-      <a href="#" onclick="mostraPagina('catalogo');caricaCatalogo();return false">Catalogo libri</a>
+      <a href="#" onclick="mostraPagina('catalogo');return false">Catalogo</a>
       <a href="#" onclick="mostraPagina('pubblica');return false">Pubblica un libro</a>
-      <a href="#" onclick="mostraPagina('area-utente');return false">La mia area</a>
     </div>
-    <div class="footer-col">
-      <h4>Informazioni</h4>
+    <div class="footer-col"><h4>Informazioni</h4>
       <a href="#" onclick="mostraPagina('regolamento');return false">Regolamento</a>
       <a href="#" onclick="mostraPagina('privacy');return false">Privacy</a>
     </div>
-    <div class="footer-col">
-      <h4>Sicurezza</h4>
-      <p style="font-size:.82rem;color:rgba(255,255,255,.5)">🔒 Usa solo metodi tracciabili.<br>Lo scambio avviene sempre a scuola.<br>Non condividere dati personali fuori dalla piattaforma.</p>
-    </div>
+    <div class="footer-col"><h4>Sicurezza</h4><p style="font-size:.82rem;color:rgba(255,255,255,.5)">🔒 Lo scambio avviene sempre a scuola. Non condividere dati personali fuori dalla piattaforma.</p></div>
   </div>
   <div class="footer-bottom">
-    <p>© 2024 Mercatino Libri Usati Scuola — Servizio a uso interno dell'istituto</p>
-    <div class="footer-disclaimer">
-      Questa piattaforma facilita l'incontro tra studenti per lo scambio di libri usati. La scuola ospita il servizio ma non è responsabile delle singole transazioni tra privati. Gli scambi avvengono sempre all'interno dell'edificio scolastico.
-    </div>
+    <p>© 2024 Mercatino Libri Usati Scuola</p>
+    <div class="footer-disclaimer">Questa piattaforma facilita l'incontro tra studenti per lo scambio di libri usati. La scuola ospita il servizio ma non è responsabile delle singole transazioni tra privati.</div>
   </div>
 </footer>
 
-<!-- ============================================================
-     MODALI
-     ============================================================ -->
-
-<!-- Modal Login -->
-<div class="modal-overlay" id="modal-login" role="dialog" aria-modal="true" aria-labelledby="login-titolo">
+<!-- ==================== MODALI ==================== -->
+<div class="modal-overlay" id="modal-login" role="dialog" aria-modal="true">
   <div class="modal">
-    <div class="modal-header">
-      <h2 id="login-titolo">Accedi al tuo account</h2>
-      <button class="modal-close" onclick="chiudiModal('modal-login')" aria-label="Chiudi">✕</button>
-    </div>
-    <form onsubmit="event.preventDefault();eseguitlogin()">
-      <div class="form-gruppo">
-        <label for="login-email">Email scolastica</label>
-        <input type="email" id="login-email" placeholder="nome.cognome@scuola.it" required autocomplete="email">
-      </div>
-      <div class="form-gruppo">
-        <label for="login-pw">Password</label>
-        <input type="password" id="login-pw" placeholder="La tua password" required autocomplete="current-password">
-      </div>
-      <button type="submit" class="btn btn-primario btn-blocco">Accedi</button>
+    <div class="modal-header"><h2>Accedi</h2><button class="modal-close" onclick="chiudiModal('modal-login')">✕</button></div>
+    <form onsubmit="event.preventDefault();eseguiLogin()">
+      <div class="form-gruppo"><label>Email</label><input type="email" id="login-email" placeholder="nome.cognome@email.it" required autocomplete="email"></div>
+      <div class="form-gruppo"><label>Password</label><input type="password" id="login-pw" placeholder="La tua password" required autocomplete="current-password"></div>
+      <div id="login-errore" style="display:none" class="messaggio messaggio-errore"><span>✗</span><span id="login-errore-testo"></span></div>
+      <button type="submit" class="btn btn-primario btn-blocco" id="btn-login">Accedi</button>
     </form>
-    <p style="text-align:center;font-size:.83rem;color:var(--grigio-4);margin-top:1rem">
-      Non hai un account? <a href="#" onclick="chiudiModal('modal-login');apriModal('modal-registrazione');return false">Registrati</a>
-    </p>
+    <p style="text-align:center;font-size:.83rem;color:var(--grigio-4);margin-top:1rem">Non hai un account? <a href="#" onclick="chiudiModal('modal-login');apriModal('modal-registrazione');return false">Registrati</a></p>
   </div>
 </div>
 
-<!-- Modal Registrazione -->
-<div class="modal-overlay" id="modal-registrazione" role="dialog" aria-modal="true" aria-labelledby="reg-titolo">
+<div class="modal-overlay" id="modal-registrazione" role="dialog" aria-modal="true">
   <div class="modal">
-    <div class="modal-header">
-      <h2 id="reg-titolo">Crea il tuo account</h2>
-      <button class="modal-close" onclick="chiudiModal('modal-registrazione')" aria-label="Chiudi">✕</button>
-    </div>
-    <form onsubmit="event.preventDefault();mostraToast('Registrazione completata! Controlla la tua email scolastica.',  'ok');chiudiModal('modal-registrazione')">
+    <div class="modal-header"><h2>Crea account</h2><button class="modal-close" onclick="chiudiModal('modal-registrazione')">✕</button></div>
+    <form onsubmit="event.preventDefault();eseguiRegistrazione()">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
-        <div class="form-gruppo">
-          <label for="reg-nome">Nome *</label>
-          <input type="text" id="reg-nome" placeholder="Mario" required>
-        </div>
-        <div class="form-gruppo">
-          <label for="reg-cognome">Cognome *</label>
-          <input type="text" id="reg-cognome" placeholder="Rossi" required>
-        </div>
+        <div class="form-gruppo"><label>Nome *</label><input type="text" id="reg-nome" placeholder="Mario" required></div>
+        <div class="form-gruppo"><label>Cognome *</label><input type="text" id="reg-cognome" placeholder="Rossi" required></div>
       </div>
-      <div class="form-gruppo">
-        <label for="reg-email">Email scolastica *</label>
-        <input type="email" id="reg-email" placeholder="nome.cognome@scuola.it" required autocomplete="email">
-      </div>
+      <div class="form-gruppo"><label>Email *</label><input type="email" id="reg-email" placeholder="mario.rossi@email.it" required autocomplete="email"></div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem">
-        <div class="form-gruppo">
-          <label for="reg-classe">Classe</label>
-          <input type="text" id="reg-classe" placeholder="es. 3B">
-        </div>
-        <div class="form-gruppo">
-          <label for="reg-indirizzo">Indirizzo</label>
-          <input type="text" id="reg-indirizzo" placeholder="es. Scientifico">
-        </div>
+        <div class="form-gruppo"><label>Classe</label><input type="text" id="reg-classe" placeholder="es. 3B"></div>
+        <div class="form-gruppo"><label>Indirizzo</label><input type="text" id="reg-indirizzo" placeholder="es. Scientifico"></div>
       </div>
-      <div class="form-gruppo">
-        <label for="reg-pw">Password * (min. 6 caratteri)</label>
-        <input type="password" id="reg-pw" placeholder="Scegli una password sicura" minlength="6" required autocomplete="new-password">
-      </div>
-      <div class="messaggio messaggio-attenzione" style="font-size:.82rem;margin-bottom:1rem">
-        <span>📋</span>
-        <span>Registrandoti accetti il <a href="#" onclick="chiudiModal('modal-registrazione');mostraPagina('regolamento');return false">Regolamento</a> e la <a href="#" onclick="chiudiModal('modal-registrazione');mostraPagina('privacy');return false">Privacy Policy</a>.</span>
-      </div>
-      <button type="button" class="btn btn-primario btn-blocco" onclick="eseguitRegistrazione()">Crea account</button>
+      <div class="form-gruppo"><label>Password * (min. 6 caratteri)</label><input type="password" id="reg-pw" placeholder="Scegli una password" minlength="6" required autocomplete="new-password"></div>
+      <div id="reg-errore" style="display:none" class="messaggio messaggio-errore"><span>✗</span><span id="reg-errore-testo"></span></div>
+      <div class="messaggio messaggio-attenzione" style="font-size:.82rem;margin-bottom:1rem"><span>📋</span><span>Registrandoti accetti il <a href="#" onclick="chiudiModal('modal-registrazione');mostraPagina('regolamento');return false">Regolamento</a>.</span></div>
+      <button type="submit" class="btn btn-primario btn-blocco" id="btn-registra">Crea account</button>
     </form>
   </div>
 </div>
 
-
-<!-- Modal Segnalazione -->
-<div class="modal-overlay" id="modal-segnalazione" role="dialog" aria-modal="true" aria-labelledby="seg-titolo">
+<div class="modal-overlay" id="modal-segnalazione" role="dialog" aria-modal="true">
   <div class="modal">
-    <div class="modal-header">
-      <h2 id="seg-titolo">Segnala questo annuncio</h2>
-      <button class="modal-close" onclick="chiudiModal('modal-segnalazione')" aria-label="Chiudi">✕</button>
-    </div>
+    <div class="modal-header"><h2>Segnala annuncio</h2><button class="modal-close" onclick="chiudiModal('modal-segnalazione')">✕</button></div>
     <input type="hidden" id="seg-libro-id">
-    <div class="messaggio messaggio-attenzione" style="margin-bottom:1rem">
-      <span>⚠️</span>
-      <span>Usa questa funzione solo per segnalare annunci con informazioni errate, ISBN sbagliati o comportamenti scorretti.</span>
-    </div>
-    <div class="form-gruppo">
-      <label for="seg-motivo">Descrivi il problema *</label>
-      <textarea id="seg-motivo" placeholder="Es: l'ISBN non corrisponde al titolo indicato. Il libro è di un'edizione diversa..." style="min-height:100px"></textarea>
-    </div>
+    <div class="messaggio messaggio-attenzione" style="margin-bottom:1rem"><span>⚠️</span><span>Usa questa funzione solo per annunci con informazioni errate o comportamenti scorretti.</span></div>
+    <div class="form-gruppo"><label>Descrivi il problema *</label><textarea id="seg-motivo" placeholder="Es: l'ISBN non corrisponde al titolo indicato..." style="min-height:100px"></textarea></div>
     <div style="display:flex;gap:.75rem">
       <button class="btn btn-ghost" onclick="chiudiModal('modal-segnalazione')" style="flex:1">Annulla</button>
       <button class="btn btn-danger" onclick="inviaSegnalazioneUI()" style="flex:1">Invia segnalazione</button>
@@ -698,79 +354,700 @@
   </div>
 </div>
 
-<!-- Toast container -->
-<div id="toast-container" class="toast-container" aria-live="assertive" role="status"></div>
+<div id="toast-container" class="toast-container" aria-live="assertive"></div>
 
-<!-- Scripts Firebase -->
-<script type="module" src="js/app-firebase.js"></script>
+<!-- ==================== FIREBASE SDK ==================== -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
 <script>
-// Inizializzazioni supplementari dopo il DOM
-document.addEventListener('DOMContentLoaded', () => {
+// ==================== FIREBASE CONFIG ====================
+const firebaseConfig = {
+  apiKey: "AIzaSyA0yJgkPONn20T1QgOb_ieA1sCFkNWC8xA",
+  authDomain: "mercatino-scuola-claude.firebaseapp.com",
+  projectId: "mercatino-scuola-claude",
+  storageBucket: "mercatino-scuola-claude.firebasestorage.app",
+  messagingSenderId: "888971006167",
+  appId: "1:888971006167:web:8c8aabefdf74327d046092"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db   = firebase.firestore();
 
-  // Mostra libri in home (max 4 disponibili)
-  const libriHome = document.getElementById('libri-home');
-  if (libriHome) {
-    const disponibili = DEMO_DATA.libri.filter(l => l.stato_annuncio === 'disponibile').slice(0, 4);
-    libriHome.innerHTML = disponibili.map(l => cardLibro(l)).join('');
+// ==================== STATO ====================
+const App = {
+  utente: null,
+  libroSelezionato: null,
+  prenotazioneTemp: null,
+  libriCache: []
+};
+
+const LUOGHI_SCAMBIO = [
+  'Ingresso scuola, vicino alla portineria',
+  'Atrio principale, piano terra',
+  'Biblioteca scolastica',
+  'Cortile interno'
+];
+
+// ==================== NAVIGAZIONE ====================
+function mostraPagina(id) {
+  document.querySelectorAll('.pagina').forEach(p => p.hidden = true);
+  const el = document.getElementById('pag-' + id);
+  if (el) el.hidden = false;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  if (id === 'catalogo') caricaCatalogo();
+  if (id === 'area-utente') caricaAreaUtente();
+  if (id === 'admin') caricaAdmin();
+}
+
+// ==================== AUTH ====================
+auth.onAuthStateChanged(async user => {
+  if (user) {
+    try {
+      const snap = await db.collection('utenti').doc(user.uid).get();
+      App.utente = snap.exists ? { uid: user.uid, email: user.email, ...snap.data() } : { uid: user.uid, email: user.email, nome: '', cognome: '', ruolo: 'studente' };
+    } catch(e) {
+      App.utente = { uid: user.uid, email: user.email, nome: '', cognome: '', ruolo: 'studente' };
+    }
+  } else {
+    App.utente = null;
   }
+  aggiornaNavbar();
+});
 
-  // Aggiorna conteggio risultati catalogo
-  const origApplicaFiltri = applicaFiltri;
-  window.applicaFiltri = function() {
-    origApplicaFiltri();
-    const el = document.getElementById('conteggio-risultati');
-    if (el) el.textContent = App.libriVisibili.length
-      ? `${App.libriVisibili.length} libro/i trovato/i`
-      : '';
-  };
-
-  // Profilo dati
-  function aggiornaProfilo() {
-    const el = document.getElementById('profilo-dati');
-    if (!el || !App.utenteCorrente) return;
-    const u = App.utenteCorrente;
+function aggiornaNavbar() {
+  const el = document.getElementById('navbar-utente');
+  if (!el) return;
+  if (App.utente) {
     el.innerHTML = `
-      ${rigaDato('Nome', u.nome + ' ' + u.cognome)}
-      ${rigaDato('Email', u.email)}
-      ${u.classe ? rigaDato('Classe', u.classe) : ''}
-      ${u.indirizzo ? rigaDato('Indirizzo', u.indirizzo) : ''}
-      ${rigaDato('Ruolo', u.ruolo)}
-    `;
+      <span style="font-size:.88rem;color:var(--testo-muted)">Ciao, <strong>${App.utente.nome || App.utente.email}</strong></span>
+      <button class="btn-nav btn-nav-outline" onclick="mostraPagina('area-utente')">La mia area</button>
+      <button class="btn-nav btn-nav-solid" onclick="eseguiLogout()">Esci</button>`;
+  } else {
+    el.innerHTML = `
+      <button class="btn-nav btn-nav-outline" onclick="apriModal('modal-login')">Accedi</button>
+      <button class="btn-nav btn-nav-solid" onclick="apriModal('modal-registrazione')">Registrati</button>`;
+  }
+}
+
+async function eseguiLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pw    = document.getElementById('login-pw').value;
+  const btn   = document.getElementById('btn-login');
+  const errEl = document.getElementById('login-errore');
+  const errTx = document.getElementById('login-errore-testo');
+
+  errEl.style.display = 'none';
+  btn.disabled = true; btn.textContent = 'Accesso…';
+
+  try {
+    await auth.signInWithEmailAndPassword(email, pw);
+    chiudiModal('modal-login');
+    mostraToast('Accesso effettuato!', 'ok');
+    mostraPagina('area-utente');
+  } catch(e) {
+    errTx.textContent = tradiciErrore(e.code);
+    errEl.style.display = 'flex';
+  }
+  btn.disabled = false; btn.textContent = 'Accedi';
+}
+
+async function eseguiRegistrazione() {
+  const nome     = document.getElementById('reg-nome').value.trim();
+  const cognome  = document.getElementById('reg-cognome').value.trim();
+  const email    = document.getElementById('reg-email').value.trim();
+  const pw       = document.getElementById('reg-pw').value;
+  const classe   = document.getElementById('reg-classe').value.trim();
+  const indirizzo= document.getElementById('reg-indirizzo').value.trim();
+  const btn      = document.getElementById('btn-registra');
+  const errEl    = document.getElementById('reg-errore');
+  const errTx    = document.getElementById('reg-errore-testo');
+
+  errEl.style.display = 'none';
+  if (!nome || !cognome || !email || !pw) {
+    errTx.textContent = 'Compila tutti i campi obbligatori.';
+    errEl.style.display = 'flex'; return;
+  }
+  btn.disabled = true; btn.textContent = 'Creazione…';
+
+  try {
+    const cred = await auth.createUserWithEmailAndPassword(email, pw);
+    await db.collection('utenti').doc(cred.user.uid).set({
+      nome, cognome, classe, indirizzo,
+      ruolo: 'studente',
+      creato_il: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    chiudiModal('modal-registrazione');
+    mostraToast('Account creato! Benvenuto, ' + nome + '!', 'ok');
+    mostraPagina('area-utente');
+  } catch(e) {
+    errTx.textContent = tradiciErrore(e.code);
+    errEl.style.display = 'flex';
+  }
+  btn.disabled = false; btn.textContent = 'Crea account';
+}
+
+async function eseguiLogout() {
+  await auth.signOut();
+  App.utente = null;
+  aggiornaNavbar();
+  mostraPagina('home');
+  mostraToast('Disconnessione effettuata.', 'ok');
+}
+
+function tradiciErrore(code) {
+  const m = {
+    'auth/email-already-in-use': 'Email già registrata.',
+    'auth/invalid-email':        'Email non valida.',
+    'auth/weak-password':        'Password troppo corta (minimo 6 caratteri).',
+    'auth/user-not-found':       'Nessun account con questa email.',
+    'auth/wrong-password':       'Password errata.',
+    'auth/invalid-credential':   'Email o password errati.',
+    'auth/too-many-requests':    'Troppi tentativi. Riprova tra qualche minuto.',
+  };
+  return m[code] || 'Errore. Riprova.';
+}
+
+// ==================== CATALOGO ====================
+async function caricaCatalogo() {
+  applicaFiltri();
+}
+
+function impostaFiltroStato(valore) {
+  document.getElementById('f-stato-annuncio').value = valore;
+  applicaFiltri();
+}
+
+function resetFiltri() {
+  ['f-titolo','f-isbn','f-prezzo-max'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  ['f-classe','f-indirizzo','f-materia','f-stato-libro'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('f-stato-annuncio').value = 'disponibile';
+  applicaFiltri();
+}
+
+async function applicaFiltri() {
+  const griglia = document.getElementById('griglia-libri');
+  if (!griglia) return;
+  griglia.innerHTML = '<p style="color:var(--testo-muted);padding:1rem">Caricamento…</p>';
+
+  try {
+    let q = db.collection('libri').orderBy('creato_il', 'desc');
+
+    const statoAnn  = document.getElementById('f-stato-annuncio')?.value;
+    const classe    = document.getElementById('f-classe')?.value;
+    const indirizzo = document.getElementById('f-indirizzo')?.value;
+    const materia   = document.getElementById('f-materia')?.value;
+    const statoLib  = document.getElementById('f-stato-libro')?.value;
+
+    if (statoAnn)  q = q.where('stato_annuncio', '==', statoAnn);
+    if (classe)    q = q.where('classe', '==', classe);
+    if (indirizzo) q = q.where('indirizzo', '==', indirizzo);
+    if (materia)   q = q.where('materia', '==', materia);
+    if (statoLib)  q = q.where('stato_libro', '==', statoLib);
+
+    const snap = await q.get();
+    let libri = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+
+    const titolo    = document.getElementById('f-titolo')?.value?.toLowerCase();
+    const isbn      = document.getElementById('f-isbn')?.value;
+    const prezzoMax = document.getElementById('f-prezzo-max')?.value;
+
+    if (titolo)    libri = libri.filter(l => l.titolo?.toLowerCase().includes(titolo));
+    if (isbn)      libri = libri.filter(l => l.isbn?.includes(isbn));
+    if (prezzoMax) libri = libri.filter(l => l.prezzo <= parseFloat(prezzoMax));
+
+    App.libriCache = libri;
+
+    const cont = document.getElementById('conteggio-risultati');
+    if (cont) cont.textContent = libri.length ? `${libri.length} libro/i trovato/i` : '';
+
+    if (!libri.length) {
+      griglia.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+        <div class="empty-icon">📚</div><h3>Nessun libro trovato</h3>
+        <p>Prova a modificare i filtri.</p>
+        <button class="btn btn-outline" onclick="resetFiltri()">Rimuovi filtri</button>
+      </div>`;
+      return;
+    }
+    griglia.innerHTML = libri.map(l => cardLibro(l)).join('');
+
+  } catch(e) {
+    console.error(e);
+    griglia.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+      <div class="empty-icon">⚠️</div><h3>Errore nel caricamento</h3>
+      <p>${e.message}</p>
+      <button class="btn btn-outline" onclick="applicaFiltri()">Riprova</button>
+    </div>`;
+  }
+}
+
+function cardLibro(l) {
+  const bA = { disponibile:'badge-disponibile', prenotato:'badge-prenotato', venduto:'badge-venduto' }[l.stato_annuncio]||'';
+  const lA = { disponibile:'✓ Disponibile', prenotato:'⏳ Prenotato', venduto:'✗ Venduto' }[l.stato_annuncio]||'';
+  const bs = badgeTipoLibro(l.stato_libro);
+  const pag = [];
+  if (l.pagamento_online)   pag.push('💳');
+  if (l.pagamento_presenza) pag.push('🤝');
+  return `<article class="libro-card" onclick="apriScheda('${l.id}')" style="cursor:pointer" tabindex="0" role="button" aria-label="${l.titolo}" onkeydown="if(event.key==='Enter')apriScheda('${l.id}')">
+    <div class="libro-card-cover">
+      ${l.immagine_url ? `<img src="${l.immagine_url}" alt="Copertina">` : '📖'}
+      <span class="badge ${bA} badge-annuncio">${lA}</span>
+    </div>
+    <div class="libro-card-body">
+      <span class="libro-card-materia">${l.materia||''}</span>
+      <h3 class="libro-card-titolo">${l.titolo}</h3>
+      <p class="libro-card-autore">${l.autore}</p>
+      <div class="libro-card-meta">
+        <span class="libro-card-prezzo">€ ${Number(l.prezzo||0).toFixed(2)}</span>
+        <span class="libro-card-classe">${l.classe||''}° · ${l.indirizzo||''}</span>
+      </div>
+      <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-top:.5rem">
+        <span class="badge ${bs.cls}">${bs.lbl}</span>
+        ${pag.map(p=>`<span class="chip">${p}</span>`).join('')}
+      </div>
+    </div>
+    <div class="libro-card-footer">
+      <button class="btn btn-primario btn-sm btn-blocco" onclick="event.stopPropagation();apriScheda('${l.id}')">Visualizza →</button>
+    </div>
+  </article>`;
+}
+
+function badgeTipoLibro(s) {
+  return { ottimo:{cls:'badge badge-libro-ottimo',lbl:'Ottimo'}, buono:{cls:'badge badge-libro-buono',lbl:'Buono'}, accettabile:{cls:'badge badge-libro-accettabile',lbl:'Accettabile'}, da_revisionare:{cls:'badge badge-libro-da_revisionare',lbl:'Da revisionare'} }[s] || {cls:'badge',lbl:s||''};
+}
+
+// ==================== SCHEDA LIBRO ====================
+async function apriScheda(id) {
+  let libro = App.libriCache.find(l => l.id === id);
+  if (!libro) {
+    const snap = await db.collection('libri').doc(id).get();
+    if (!snap.exists) { mostraToast('Libro non trovato.','errore'); return; }
+    libro = { id: snap.id, ...snap.data() };
+  }
+  App.libroSelezionato = libro;
+  renderScheda(libro);
+  mostraPagina('scheda-libro');
+}
+
+function renderScheda(l) {
+  const el = document.getElementById('scheda-contenuto');
+  if (!el) return;
+  const bs = badgeTipoLibro(l.stato_libro);
+  const bA = { disponibile:'badge-disponibile', prenotato:'badge-prenotato', venduto:'badge-venduto' }[l.stato_annuncio]||'';
+  const lA = { disponibile:'✓ Disponibile', prenotato:'⏳ Prenotato', venduto:'✗ Venduto' }[l.stato_annuncio]||'';
+  const pag = [];
+  if (l.pagamento_online)   pag.push('<span class="pill-pagamento">💳 Online</span>');
+  if (l.pagamento_presenza) pag.push('<span class="pill-pagamento">🤝 Di presenza</span>');
+  const puoPren = l.stato_annuncio === 'disponibile';
+
+  el.innerHTML = `
+    <nav class="breadcrumb container">
+      <a href="#" onclick="mostraPagina('catalogo');return false">Catalogo</a><span>›</span><span>${l.materia||''}</span><span>›</span><span>${l.titolo}</span>
+    </nav>
+    <div class="container">
+      <div class="scheda-layout">
+        <div>
+          <div class="scheda-copertina">${l.immagine_url?`<img src="${l.immagine_url}" alt="Copertina">`:'📖'}</div>
+          <div style="margin-top:.75rem;display:flex;gap:.5rem;flex-wrap:wrap">
+            <span class="badge ${bA}">${lA}</span>
+            <span class="badge ${bs.cls}">${bs.lbl}</span>
+          </div>
+        </div>
+        <div class="scheda-info">
+          <div>
+            <p class="scheda-materia">${l.materia||''} · ${l.classe||''}° anno · ${l.indirizzo||''}</p>
+            <h1 class="scheda-titolo">${l.titolo}</h1>
+            <p class="scheda-autore">${l.autore}</p>
+          </div>
+          <dl class="scheda-dati-list">
+            ${l.isbn?`<div class="scheda-dato"><dt>ISBN</dt><dd>${l.isbn}</dd></div>`:''}
+            ${l.editore?`<div class="scheda-dato"><dt>Editore</dt><dd>${l.editore}</dd></div>`:''}
+            <div class="scheda-dato"><dt>Classe</dt><dd>${l.classe||''}° anno</dd></div>
+            <div class="scheda-dato"><dt>Indirizzo</dt><dd>${l.indirizzo||''}</dd></div>
+          </dl>
+          <div class="scheda-prezzo-box">
+            <div class="scheda-prezzo-num">€ ${Number(l.prezzo||0).toFixed(2)}</div>
+            <div class="scheda-pagamenti">${pag.join('')}</div>
+          </div>
+          ${l.descrizione?`<div class="messaggio messaggio-info"><span>💬</span><div><strong>Note</strong><br><span style="font-size:.88rem">${l.descrizione}</span></div></div>`:''}
+          ${puoPren
+            ? `<button class="btn btn-secondario btn-lg btn-blocco" onclick="avviaPrenotazione('${l.id}')">📚 Prenota questo libro</button>`
+            : `<div class="messaggio messaggio-attenzione"><span>⚠️</span><span>Non disponibile al momento.</span></div>`
+          }
+          <button class="btn btn-ghost btn-sm" onclick="apriModalSegnalazione('${l.id}')" style="margin-top:.5rem">🚩 Segnala annuncio</button>
+          <div class="messaggio messaggio-info" style="font-size:.82rem;margin-top:.5rem">
+            <span>🔒</span><span>Lo scambio avviene sempre <strong>a scuola</strong>. Non condividere dati personali fuori dalla piattaforma.</span>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ==================== RICERCA ====================
+function cercaRapido(q) {
+  if (!q.trim()) return;
+  document.getElementById('f-titolo').value = q.trim();
+  document.getElementById('f-stato-annuncio').value = '';
+  mostraPagina('catalogo');
+}
+
+// ==================== PRENOTAZIONE ====================
+function avviaPrenotazione(libroId) {
+  if (!App.utente) { mostraToast('Accedi per prenotare.','attenzione'); apriModal('modal-login'); return; }
+  const libro = App.libriCache.find(l=>l.id===libroId) || App.libroSelezionato;
+  if (!libro) return;
+  App.prenotazioneTemp = { libroId, libro };
+  renderStepPrenotazione(1);
+  mostraPagina('prenotazione');
+}
+
+function renderStepPrenotazione(step) {
+  const el = document.getElementById('form-prenotazione');
+  if (!el) return;
+  const l = App.prenotazioneTemp.libro;
+  const opz = [];
+  if (l.pagamento_online)   opz.push({v:'online',  t:'💳 Pagamento online',    s:'Paga prima dello scambio'});
+  if (l.pagamento_presenza) opz.push({v:'presenza', t:'🤝 Pagamento di presenza', s:'Paghi al momento dello scambio'});
+
+  if (step === 1) {
+    el.innerHTML = `<div class="form-card">
+      <h2>Prenota: ${l.titolo}</h2>
+      <form id="form-step1" onsubmit="event.preventDefault();passaStep2()">
+        <div class="form-gruppo">
+          <label>Modalità di pagamento *</label>
+          <div class="scelta-pagamento">
+            ${opz.map(o=>`<label><input type="radio" name="metodo-pag" value="${o.v}" ${opz.length===1?'checked':''}>
+              <span class="pay-titolo">${o.t}</span><span class="pay-sub">${o.s}</span></label>`).join('')}
+          </div>
+        </div>
+        <div class="form-gruppo">
+          <label>Luogo di scambio preferito</label>
+          <select id="pren-luogo">
+            ${LUOGHI_SCAMBIO.map(lu=>`<option value="${lu}">${lu}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-gruppo">
+          <label>Note per il venditore (opzionale)</label>
+          <textarea id="pren-note" placeholder="Es: sono disponibile il lunedì e il mercoledì"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primario btn-blocco">Continua →</button>
+      </form>
+    </div>`;
   }
 
-  document.querySelectorAll('.area-tab').forEach(t => {
-    t.addEventListener('click', () => setTimeout(aggiornaProfilo, 50));
-  });
+  if (step === 2) {
+    const m = App.prenotazioneTemp.metodo;
+    el.innerHTML = `<div class="form-card">
+      <h2>Riepilogo prenotazione</h2>
+      <dl class="riepilogo-card">
+        <div class="riepilogo-riga"><dt>Libro</dt><dd>${l.titolo}</dd></div>
+        <div class="riepilogo-riga"><dt>Prezzo</dt><dd>€ ${Number(l.prezzo||0).toFixed(2)}</dd></div>
+        <div class="riepilogo-riga"><dt>Pagamento</dt><dd>${m==='online'?'💳 Online':'🤝 Di presenza'}</dd></div>
+        <div class="riepilogo-riga"><dt>Luogo</dt><dd>${App.prenotazioneTemp.luogo}</dd></div>
+        <div class="riepilogo-riga riepilogo-totale"><dt>Totale</dt><dd>€ ${Number(l.prezzo||0).toFixed(2)}</dd></div>
+      </dl>
+      ${m==='presenza'
+        ? `<div class="messaggio messaggio-ok" style="margin-bottom:1rem"><span>✓</span><div><strong>Pagamento di presenza</strong><br><small>Porta l'importo esatto: € ${Number(l.prezzo||0).toFixed(2)}</small></div></div>`
+        : `<div class="messaggio messaggio-info" style="margin-bottom:1rem"><span>🔒</span><span>Riceverai le istruzioni per il pagamento online dopo la conferma del venditore.</span></div>`
+      }
+      <div class="messaggio messaggio-attenzione" style="font-size:.82rem;margin-bottom:1rem">
+        <span>⚠️</span><span>Completa lo scambio solo tramite la piattaforma. Non condividere dati personali.</span>
+      </div>
+      <div style="display:flex;gap:.75rem">
+        <button class="btn btn-ghost" onclick="renderStepPrenotazione(1)">← Indietro</button>
+        <button class="btn btn-secondario" id="btn-conferma-pren" style="flex:1" onclick="confermaPrenotazione()">✓ Conferma</button>
+      </div>
+    </div>`;
+  }
+}
 
-  // Admin tabs
-  window.attivaTabAdmin = function(nome) {
-    document.querySelectorAll('#pag-admin .area-tab').forEach(t => t.classList.remove('attivo'));
-    document.querySelectorAll('#pag-admin .area-panel').forEach(p => p.classList.remove('visibile'));
-    document.querySelector(`#pag-admin .area-tab[data-tab="admin-${nome === 'annunci' ? 'annunci' : nome + '-tab'}"]`)?.classList.add('attivo');
-    document.getElementById('panel-admin-' + nome)?.classList.add('visibile');
-    if (nome === 'utenti') renderAdminUtenti();
-  };
+function passaStep2() {
+  App.prenotazioneTemp.metodo = document.querySelector('input[name="metodo-pag"]:checked')?.value || 'presenza';
+  App.prenotazioneTemp.luogo  = document.getElementById('pren-luogo')?.value;
+  App.prenotazioneTemp.note   = document.getElementById('pren-note')?.value || '';
+  renderStepPrenotazione(2);
+}
 
-  window.renderAdminUtenti = function() {
-    const el = document.getElementById('admin-lista-utenti');
-    if (!el) return;
+async function confermaPrenotazione() {
+  const btn = document.getElementById('btn-conferma-pren');
+  if (btn) { btn.disabled=true; btn.textContent='Invio…'; }
+  try {
+    await db.collection('prenotazioni').add({
+      libro_id:           App.prenotazioneTemp.libroId,
+      acquirente_id:      App.utente.uid,
+      stato_prenotazione: 'in_attesa',
+      metodo_pagamento:   App.prenotazioneTemp.metodo,
+      luogo_scambio:      App.prenotazioneTemp.luogo,
+      note_acquirente:    App.prenotazioneTemp.note,
+      conferma_venditore: false,
+      conferma_acquirente:false,
+      creato_il:          firebase.firestore.FieldValue.serverTimestamp()
+    });
+    await db.collection('libri').doc(App.prenotazioneTemp.libroId).update({
+      stato_annuncio: 'prenotato',
+      aggiornato_il:  firebase.firestore.FieldValue.serverTimestamp()
+    });
+    mostraToast('Prenotazione inviata! Il venditore riceverà una notifica.','ok');
+    mostraPagina('area-utente');
+  } catch(e) {
+    mostraToast('Errore: ' + e.message, 'errore');
+    if (btn) { btn.disabled=false; btn.textContent='✓ Conferma'; }
+  }
+}
+
+// ==================== PUBBLICA ====================
+async function inviaAnnuncio(e) {
+  e.preventDefault();
+  if (!App.utente) { apriModal('modal-login'); return; }
+  const val = id => document.getElementById(id)?.value || '';
+  if (!val('pub-titolo')||!val('pub-autore')||!val('pub-prezzo')||!val('pub-materia')||!val('pub-classe')) {
+    mostraToast('Compila tutti i campi obbligatori.','errore'); return;
+  }
+  const btn = e.target.querySelector('[type="submit"]');
+  if (btn) { btn.disabled=true; btn.textContent='Pubblicazione…'; }
+  try {
+    await db.collection('libri').add({
+      titolo:            val('pub-titolo'),
+      autore:            val('pub-autore'),
+      isbn:              val('pub-isbn'),
+      editore:           val('pub-editore'),
+      materia:           val('pub-materia'),
+      classe:            val('pub-classe'),
+      indirizzo:         val('pub-indirizzo'),
+      prezzo:            parseFloat(val('pub-prezzo'))||0,
+      stato_libro:       val('pub-stato-libro'),
+      descrizione:       val('pub-descrizione'),
+      immagine_url:      null,
+      venditore_id:      App.utente.uid,
+      stato_annuncio:    'disponibile',
+      pagamento_online:  document.getElementById('pub-pag-online')?.checked||false,
+      pagamento_presenza:document.getElementById('pub-pag-presenza')?.checked||true,
+      allegati:          [],
+      creato_il:         firebase.firestore.FieldValue.serverTimestamp(),
+      aggiornato_il:     firebase.firestore.FieldValue.serverTimestamp()
+    });
+    e.target.reset();
+    mostraToast('Annuncio pubblicato con successo! 🎉','ok');
+    mostraPagina('area-utente');
+  } catch(err) {
+    mostraToast('Errore: ' + err.message,'errore');
+  }
+  if (btn) { btn.disabled=false; btn.textContent='📤 Pubblica l\'annuncio'; }
+}
+
+// ==================== AREA UTENTE ====================
+async function caricaAreaUtente() {
+  if (!App.utente) { mostraPagina('home'); return; }
+  const nc = document.getElementById('area-nome-utente');
+  if (nc) nc.textContent = (App.utente.nome||'') + ' ' + (App.utente.cognome||'');
+  await Promise.all([renderMieiAnnunci(), renderMiePrenotazioni()]);
+  renderProfiloUtente();
+}
+
+async function renderMieiAnnunci() {
+  const el = document.getElementById('lista-miei-annunci');
+  if (!el) return;
+  el.innerHTML = '<p style="color:var(--testo-muted)">Caricamento…</p>';
+  try {
+    const snap = await db.collection('libri').where('venditore_id','==',App.utente.uid).orderBy('creato_il','desc').get();
+    const miei = snap.docs.map(d=>({id:d.id,...d.data()}));
+    if (!miei.length) {
+      el.innerHTML = `<div class="empty-state"><div class="empty-icon">📚</div><h3>Nessun annuncio</h3><p>Non hai ancora pubblicato nessun libro.</p><button class="btn btn-primario" onclick="mostraPagina('pubblica')">+ Pubblica</button></div>`;
+      return;
+    }
     el.innerHTML = `<div class="tabella-wrap"><table class="tabella">
-      <thead><tr><th>Nome</th><th>Email</th><th>Classe</th><th>Ruolo</th><th>Annunci</th></tr></thead>
-      <tbody>${DEMO_DATA.utenti.map(u => `<tr>
-        <td>${u.nome} ${u.cognome}</td>
-        <td>${u.email}</td>
-        <td>${u.classe || '—'}</td>
-        <td><span class="badge ${u.ruolo==='admin'?'badge-prenotato':'badge-disponibile'}">${u.ruolo}</span></td>
-        <td>${DEMO_DATA.libri.filter(l=>l.venditore_id===u.id).length}</td>
+      <thead><tr><th>Titolo</th><th>Prezzo</th><th>Stato</th><th>Azioni</th></tr></thead>
+      <tbody>${miei.map(l=>`<tr>
+        <td><strong>${l.titolo}</strong><br><small style="color:var(--grigio-4)">${l.autore}</small></td>
+        <td>€ ${Number(l.prezzo||0).toFixed(2)}</td>
+        <td><span class="badge badge-${l.stato_annuncio}">${labelStato(l.stato_annuncio)}</span></td>
+        <td style="display:flex;gap:.4rem;flex-wrap:wrap">
+          <button class="btn btn-outline btn-sm" onclick="apriScheda('${l.id}')">Vedi</button>
+          ${l.stato_annuncio!=='venduto'?`<button class="btn btn-danger btn-sm" onclick="segnaVendutoUI('${l.id}')">Segna venduto</button>`:''}
+        </td>
       </tr>`).join('')}</tbody></table></div>`;
-  };
+  } catch(e) { el.innerHTML = `<p style="color:var(--rosso)">Errore: ${e.message}</p>`; }
+}
 
-  // Carica admin se già loggato come admin
-  if (App.utenteCorrente?.ruolo === 'admin') caricaAdmin();
+async function renderMiePrenotazioni() {
+  const el = document.getElementById('lista-mie-prenotazioni');
+  if (!el) return;
+  el.innerHTML = '<p style="color:var(--testo-muted)">Caricamento…</p>';
+  try {
+    const snap = await db.collection('prenotazioni').where('acquirente_id','==',App.utente.uid).orderBy('creato_il','desc').get();
+    const mie = snap.docs.map(d=>({id:d.id,...d.data()}));
+    if (!mie.length) {
+      el.innerHTML = `<div class="empty-state"><div class="empty-icon">🔖</div><h3>Nessuna prenotazione</h3><button class="btn btn-primario" onclick="mostraPagina('catalogo')">Sfoglia il catalogo</button></div>`;
+      return;
+    }
+    const libriMap = {};
+    await Promise.all(mie.map(async p => {
+      if (!libriMap[p.libro_id]) {
+        const s = await db.collection('libri').doc(p.libro_id).get();
+        if (s.exists) libriMap[p.libro_id] = s.data();
+      }
+    }));
+    el.innerHTML = `<div class="tabella-wrap"><table class="tabella">
+      <thead><tr><th>Libro</th><th>Metodo</th><th>Stato</th><th>Luogo</th></tr></thead>
+      <tbody>${mie.map(p=>`<tr>
+        <td><strong>${libriMap[p.libro_id]?.titolo||'N/D'}</strong></td>
+        <td>${p.metodo_pagamento==='online'?'💳 Online':'🤝 Presenza'}</td>
+        <td><span class="badge badge-${p.stato_prenotazione}">${labelStatoPren(p.stato_prenotazione)}</span></td>
+        <td style="font-size:.83rem">${p.luogo_scambio||'—'}</td>
+      </tr>`).join('')}</tbody></table></div>`;
+  } catch(e) { el.innerHTML = `<p style="color:var(--rosso)">Errore: ${e.message}</p>`; }
+}
 
-  // Populat select pubblica form
-  const selMatPub = document.getElementById('pub-materia');
-  // already populated via HTML
+function renderProfiloUtente() {
+  const el = document.getElementById('profilo-dati');
+  if (!el||!App.utente) return;
+  const u = App.utente;
+  el.innerHTML = `
+    <div class="scheda-dato"><dt>Nome</dt><dd>${u.nome||''} ${u.cognome||''}</dd></div>
+    <div class="scheda-dato"><dt>Email</dt><dd>${u.email||''}</dd></div>
+    ${u.classe?`<div class="scheda-dato"><dt>Classe</dt><dd>${u.classe}</dd></div>`:''}
+    ${u.indirizzo?`<div class="scheda-dato"><dt>Indirizzo</dt><dd>${u.indirizzo}</dd></div>`:''}
+    <div class="scheda-dato"><dt>Ruolo</dt><dd>${u.ruolo||'studente'}</dd></div>`;
+}
+
+async function segnaVendutoUI(id) {
+  if (!confirm('Segna come venduto? L\'annuncio verrà chiuso.')) return;
+  await db.collection('libri').doc(id).update({ stato_annuncio:'venduto', aggiornato_il: firebase.firestore.FieldValue.serverTimestamp() });
+  mostraToast('Libro segnato come venduto.','ok');
+  renderMieiAnnunci();
+}
+
+// ==================== ADMIN ====================
+async function caricaAdmin() {
+  if (!App.utente || App.utente.ruolo !== 'admin') {
+    mostraPagina('home'); mostraToast('Accesso negato.','errore'); return;
+  }
+  try {
+    const [libriSnap, prenSnap, segSnap] = await Promise.all([
+      db.collection('libri').get(),
+      db.collection('prenotazioni').get(),
+      db.collection('segnalazioni').where('stato','==','in_revisione').get()
+    ]);
+    const libri = libriSnap.docs.map(d=>d.data());
+    document.getElementById('admin-stat-annunci').textContent      = libri.length;
+    document.getElementById('admin-stat-disponibili').textContent  = libri.filter(l=>l.stato_annuncio==='disponibile').length;
+    document.getElementById('admin-stat-prenotazioni').textContent = prenSnap.size;
+    document.getElementById('admin-stat-segnalazioni').textContent = segSnap.size;
+
+    const el = document.getElementById('admin-lista-annunci');
+    if (el) {
+      const tutti = libriSnap.docs.map(d=>({id:d.id,...d.data()}));
+      el.innerHTML = `<div class="tabella-wrap"><table class="tabella">
+        <thead><tr><th>Titolo</th><th>Prezzo</th><th>Stato</th><th>Azioni</th></tr></thead>
+        <tbody>${tutti.map(l=>`<tr>
+          <td><strong>${l.titolo}</strong><br><small>${l.autore}</small></td>
+          <td>€ ${Number(l.prezzo||0).toFixed(2)}</td>
+          <td><span class="badge badge-${l.stato_annuncio}">${labelStato(l.stato_annuncio)}</span></td>
+          <td><button class="btn btn-danger btn-sm" onclick="rimuoviAnnuncioAdmin('${l.id}')">Rimuovi</button></td>
+        </tr>`).join('')}</tbody></table></div>`;
+    }
+  } catch(e) { mostraToast('Errore admin: '+e.message,'errore'); }
+}
+
+async function rimuoviAnnuncioAdmin(id) {
+  if (!confirm('Eliminare questo annuncio?')) return;
+  await db.collection('libri').doc(id).delete();
+  mostraToast('Annuncio rimosso.','ok');
+  caricaAdmin();
+}
+
+function attivaTabAdmin(nome) {
+  document.querySelectorAll('#pag-admin .area-tab').forEach(t=>t.classList.remove('attivo'));
+  document.querySelectorAll('#pag-admin .area-panel').forEach(p=>p.classList.remove('visibile'));
+  const tabs = document.querySelectorAll('#pag-admin .area-tab');
+  const idx = {annunci:0,segnalazioni:1,utenti:2}[nome]||0;
+  if (tabs[idx]) tabs[idx].classList.add('attivo');
+  const panels = {annunci:'panel-admin-annunci', segnalazioni:'panel-admin-segnalazioni', utenti:'panel-admin-utenti'};
+  document.getElementById(panels[nome])?.classList.add('visibile');
+}
+
+// ==================== SEGNALAZIONI ====================
+function apriModalSegnalazione(libroId) {
+  document.getElementById('seg-libro-id').value = libroId;
+  document.getElementById('seg-motivo').value = '';
+  apriModal('modal-segnalazione');
+}
+
+async function inviaSegnalazioneUI() {
+  if (!App.utente) { mostraToast('Accedi per segnalare.','errore'); return; }
+  const libroId = document.getElementById('seg-libro-id').value;
+  const motivo  = document.getElementById('seg-motivo').value.trim();
+  if (motivo.length < 10) { mostraToast('Descrivi il problema (almeno 10 caratteri).','errore'); return; }
+  await db.collection('segnalazioni').add({
+    libro_id: libroId, segnalato_da: App.utente.uid,
+    motivo, stato: 'in_revisione',
+    creato_il: firebase.firestore.FieldValue.serverTimestamp()
+  });
+  mostraToast('Segnalazione inviata. La verificheremo al più presto.','ok');
+  chiudiModal('modal-segnalazione');
+}
+
+// ==================== HOME livri recenti ====================
+async function caricaLibriHome() {
+  const el = document.getElementById('libri-home');
+  if (!el) return;
+  try {
+    const snap = await db.collection('libri').where('stato_annuncio','==','disponibile').orderBy('creato_il','desc').limit(4).get();
+    const libri = snap.docs.map(d=>({id:d.id,...d.data()}));
+    el.innerHTML = libri.length ? libri.map(l=>cardLibro(l)).join('') : '<p style="color:var(--testo-muted)">Nessun libro disponibile al momento.</p>';
+  } catch(e) {
+    el.innerHTML = '<p style="color:var(--testo-muted)">Caricamento non riuscito.</p>';
+  }
+}
+
+// ==================== TABS ====================
+function attivaTab(tabId) {
+  document.querySelectorAll('#pag-area-utente .area-tab').forEach(t=>t.classList.remove('attivo'));
+  document.querySelectorAll('#pag-area-utente .area-panel').forEach(p=>p.classList.remove('visibile'));
+  document.querySelector(`#pag-area-utente .area-tab[data-tab="${tabId}"]`)?.classList.add('attivo');
+  document.getElementById('panel-'+tabId)?.classList.add('visibile');
+  if (tabId==='profilo') renderProfiloUtente();
+}
+
+// ==================== MODAL / TOAST ====================
+function apriModal(id) {
+  const m = document.getElementById(id);
+  if (m) { m.classList.add('aperto'); document.body.style.overflow='hidden'; }
+}
+function chiudiModal(id) {
+  const m = document.getElementById(id);
+  if (m) { m.classList.remove('aperto'); document.body.style.overflow=''; }
+}
+function mostraToast(msg, tipo='ok') {
+  const cont = document.getElementById('toast-container');
+  if (!cont) return;
+  const t = document.createElement('div');
+  t.className = `toast toast-${tipo}`;
+  t.innerHTML = `<span>${{ok:'✓',errore:'✗',attenzione:'⚠️'}[tipo]||'ℹ️'}</span><span>${msg}</span>`;
+  cont.appendChild(t);
+  setTimeout(()=>{ t.classList.add('uscita'); setTimeout(()=>t.remove(),400); }, 3500);
+}
+
+// ==================== LABEL HELPERS ====================
+function labelStato(s) {
+  return {disponibile:'✓ Disponibile',prenotato:'⏳ Prenotato',venduto:'✗ Venduto'}[s]||s;
+}
+function labelStatoPren(s) {
+  return {in_attesa:'In attesa',confermata:'Confermata',pagamento_online:'Pag. online',da_pagare:'Da pagare',completata:'Completata',annullata:'Annullata'}[s]||s;
+}
+
+// ==================== INIT ====================
+document.addEventListener('DOMContentLoaded', () => {
+  mostraPagina('home');
+  caricaLibriHome();
+
+  document.querySelectorAll('.modal-overlay').forEach(o => {
+    o.addEventListener('click', e => { if (e.target===o) chiudiModal(o.id); });
+  });
+  document.addEventListener('keydown', e => {
+    if (e.key==='Escape') document.querySelectorAll('.modal-overlay.aperto').forEach(m=>chiudiModal(m.id));
+  });
 });
 </script>
 </body>
