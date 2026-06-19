@@ -375,12 +375,19 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db   = firebase.firestore();
 
+// Cache locale: rende il sito molto più veloce su ricariche e navigazioni successive
+db.enablePersistence({ synchronizeTabs: true }).catch(err => {
+  console.warn('Persistenza Firestore non disponibile:', err.code);
+});
+
 // ==================== STATO ====================
 const App = {
   utente: null,
   libroSelezionato: null,
   prenotazioneTemp: null,
-  libriCache: []
+  libriCache: [],
+  catalogoCaricato: false,
+  _pendingNav: null
 };
 
 const LUOGHI_SCAMBIO = [
@@ -406,28 +413,44 @@ auth.onAuthStateChanged(async user => {
   if (user) {
     try {
       const snap = await db.collection('utenti').doc(user.uid).get();
-      App.utente = snap.exists ? { uid: user.uid, email: user.email, ...snap.data() } : { uid: user.uid, email: user.email, nome: '', cognome: '', ruolo: 'studente' };
+      App.utente = snap.exists
+        ? { uid: user.uid, email: user.email, ...snap.data() }
+        : { uid: user.uid, email: user.email, nome: '', cognome: '', ruolo: 'studente' };
     } catch(e) {
       App.utente = { uid: user.uid, email: user.email, nome: '', cognome: '', ruolo: 'studente' };
     }
+    aggiornaNavbar();
+    // Se era in attesa di navigare verso area-utente dopo il login
+    if (App._pendingNav) {
+      const dest = App._pendingNav;
+      App._pendingNav = null;
+      if (dest === 'area-utente') {
+        if (App.utente.ruolo === 'admin') mostraPagina('admin');
+        else mostraPagina('area-utente');
+      }
+    }
   } else {
     App.utente = null;
+    aggiornaNavbar();
   }
-  aggiornaNavbar();
 });
 
 function aggiornaNavbar() {
   const el = document.getElementById('navbar-utente');
   if (!el) return;
   if (App.utente) {
-    el.innerHTML = `
-      <span style="font-size:.88rem;color:var(--testo-muted)">Ciao, <strong>${App.utente.nome || App.utente.email}</strong></span>
-      <button class="btn-nav btn-nav-outline" onclick="mostraPagina('area-utente')">La mia area</button>
-      <button class="btn-nav btn-nav-solid" onclick="eseguiLogout()">Esci</button>`;
+    const isAdmin = App.utente.ruolo === 'admin';
+    const areaBtn = isAdmin
+      ? "<button class=\"btn-nav btn-nav-outline\" style=\"color:#c0392b;border-color:#c0392b\" onclick=\"mostraPagina(&quot;admin&quot;);caricaAdmin()\">🛡️ Admin</button>"
+      : "<button class=\"btn-nav btn-nav-outline\" onclick=\"mostraPagina(&quot;area-utente&quot;)\">La mia area</button>";
+    el.innerHTML =
+      '<span style="font-size:.88rem;color:var(--testo-muted)">Ciao, <strong>' + (App.utente.nome || App.utente.email) + '</strong></span>' +
+      areaBtn +
+      '<button class="btn-nav btn-nav-solid" onclick="eseguiLogout()">Esci</button>';
   } else {
-    el.innerHTML = `
-      <button class="btn-nav btn-nav-outline" onclick="apriModal('modal-login')">Accedi</button>
-      <button class="btn-nav btn-nav-solid" onclick="apriModal('modal-registrazione')">Registrati</button>`;
+    el.innerHTML =
+      "<button class=\"btn-nav btn-nav-outline\" onclick=\"apriModal(&quot;modal-login&quot;)\">Accedi</button>" +
+      "<button class=\"btn-nav btn-nav-solid\" onclick=\"apriModal(&quot;modal-registrazione&quot;)\">Registrati</button>";
   }
 }
 
@@ -445,7 +468,8 @@ async function eseguiLogin() {
     await auth.signInWithEmailAndPassword(email, pw);
     chiudiModal('modal-login');
     mostraToast('Accesso effettuato!', 'ok');
-    mostraPagina('area-utente');
+    // Aspetta che onAuthStateChanged carichi il profilo con il ruolo
+    App._pendingNav = 'area-utente';
   } catch(e) {
     errTx.textContent = tradiciErrore(e.code);
     errEl.style.display = 'flex';
@@ -480,7 +504,7 @@ async function eseguiRegistrazione() {
     });
     chiudiModal('modal-registrazione');
     mostraToast('Account creato! Benvenuto, ' + nome + '!', 'ok');
-    mostraPagina('area-utente');
+    App._pendingNav = 'area-utente';
   } catch(e) {
     errTx.textContent = tradiciErrore(e.code);
     errEl.style.display = 'flex';
@@ -511,7 +535,15 @@ function tradiciErrore(code) {
 
 // ==================== CATALOGO ====================
 async function caricaCatalogo() {
-  applicaFiltri();
+  if (!App.catalogoCaricato) {
+    App.catalogoCaricato = true;
+    applicaFiltri();
+  }
+}
+
+function invalidaCache() {
+  App.catalogoCaricato = false;
+  App.libriCache = [];
 }
 
 function impostaFiltroStato(valore) {
@@ -828,7 +860,9 @@ async function inviaAnnuncio(e) {
       aggiornato_il:     firebase.firestore.FieldValue.serverTimestamp()
     });
     e.target.reset();
+    invalidaCache();
     mostraToast('Annuncio pubblicato con successo! 🎉','ok');
+    App._pendingNav = 'area-utente';
     mostraPagina('area-utente');
   } catch(err) {
     mostraToast('Errore: ' + err.message,'errore');
@@ -997,7 +1031,7 @@ async function caricaLibriHome() {
     const libri = snap.docs.map(d=>({id:d.id,...d.data()}));
     el.innerHTML = libri.length ? libri.map(l=>cardLibro(l)).join('') : '<p style="color:var(--testo-muted)">Nessun libro disponibile al momento.</p>';
   } catch(e) {
-    el.innerHTML = '<p style="color:var(--testo-muted)">Caricamento non riuscito.</p>';
+    el.innerHTML = '<p style="color:var(--testo-muted)">Caricamento non riuscito. <button class="btn btn-outline btn-sm" onclick="caricaLibriHome()">Riprova</button></p>';
   }
 }
 
