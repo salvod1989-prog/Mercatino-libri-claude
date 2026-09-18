@@ -656,18 +656,6 @@ textarea.form-control { resize: vertical; min-height: 90px; }
 .stat-value { font-size: 2rem; font-weight: 700; color: var(--blu); line-height: 1; margin-bottom: .4rem; }
 .stat-label { font-size: .83rem; color: var(--grigio-500); }
 
-/* ── UPLOAD AREA ──────────────────────────────────────────────── */
-.upload-area {
-  border: 2px dashed var(--grigio-300);
-  border-radius: var(--r-md);
-  padding: 2rem;
-  text-align: center;
-  cursor: pointer;
-  transition: border-color var(--transition), background var(--transition);
-}
-.upload-area:hover { border-color: var(--blu-medio); background: var(--blu-chiaro); }
-.upload-area p { color: var(--grigio-500); font-size: .88rem; margin: .5rem 0 0; }
-
 /* ── REGOLAMENTO / PRIVACY ──────────────────────────────────── */
 .doc-content { max-width: 720px; }
 .doc-content h2 { font-size: 1.25rem; color: var(--blu); margin: 2rem 0 .75rem; padding-bottom: .4rem; border-bottom: 2px solid var(--blu-chiaro); }
@@ -943,6 +931,15 @@ footer {
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <!-- SheetJS: lettura/scrittura file Excel (usato nell'area admin) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <!-- PDF.js: lettura file PDF (elenchi libri di testo) nell'area admin -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>
+    if (window['pdfjsLib']) {
+      pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+  </script>
 </head>
 <body>
 
@@ -966,6 +963,7 @@ footer {
           <li><a href="#" onclick="requireAuth(()=>navigate('venditore'));return false" data-view="venditore">Vendi</a></li>
           <li><a href="#" onclick="requireAuth(()=>navigate('acquirente'));return false" data-view="acquirente">Le mie prenotazioni</a></li>
           <li><a href="#" onclick="navigate('regolamento');return false" data-view="regolamento">Regolamento</a></li>
+          <li><a href="#" onclick="navigate('assistenza');return false" data-view="assistenza">Assistenza</a></li>
         </ul>
         <div class="nav-actions" id="nav-actions-area">
           <!-- popolato da JS in base allo stato auth -->
@@ -981,7 +979,6 @@ footer {
               <a href="#" onclick="requireAuth(()=>navigate('venditore'));toggleUserDropdown(false);return false" role="menuitem">📤 I miei annunci</a>
               <a href="#" onclick="requireAuth(()=>navigate('acquirente'));toggleUserDropdown(false);return false" role="menuitem">📋 Le mie prenotazioni</a>
               <div id="nav-admin-link" style="display:none"><a href="#" onclick="navigate('admin');toggleUserDropdown(false);return false" role="menuitem">⚙️ Area Admin</a></div>
-              <div id="nav-admin-setup-link"><a href="#" onclick="navigate('admin-setup');toggleUserDropdown(false);return false" role="menuitem" style="color:var(--grigio-400);font-size:.78rem">🔑 Configurazione admin</a></div>
               <hr style="margin:.4rem 0;border:none;border-top:1px solid var(--grigio-200)">
               <a href="#" onclick="doLogout();return false" role="menuitem" style="color:var(--rosso)">🚪 Esci</a>
             </div>
@@ -1003,7 +1000,6 @@ footer {
           <a href="#" onclick="navigate('privacy');closeMobileMenu();return false" role="menuitem" data-view="privacy">🔒 Privacy</a>
           <a href="#" onclick="navigate('assistenza');closeMobileMenu();return false" role="menuitem" data-view="assistenza">💬 Assistenza</a>
           <a href="#" id="mobile-admin-link" onclick="navigate('admin');closeMobileMenu();return false" role="menuitem" style="display:none;color:#aaa;font-size:.82rem">⚙️ Area Admin</a>
-          <a href="#" onclick="navigate('admin-setup');closeMobileMenu();return false" role="menuitem" style="color:#6b7a90;font-size:.78rem">🔑 Configurazione admin</a>
           <a href="#" onclick="doLogout();closeMobileMenu();return false" role="menuitem" style="color:var(--rosso)">🚪 Esci dall'account</a>
         </div>
         <div id="mobile-auth-logged-out">
@@ -1049,7 +1045,7 @@ footer {
           <div class="step-card">
             <div class="step-number" aria-hidden="true">1</div>
             <h3>Pubblica il libro</h3>
-            <p>Inserisci i dati del libro: titolo, ISBN, materia, classe, stato e prezzo. In pochi minuti il tuo annuncio è online.</p>
+            <p>Scegli la tua classe e sezione, seleziona il libro dall'elenco dei testi adottati, indica le condizioni e il prezzo. In pochi minuti il tuo annuncio è online.</p>
           </div>
           <div class="step-card">
             <div class="step-number" aria-hidden="true">2</div>
@@ -1193,21 +1189,7 @@ footer {
                 <label for="filter-classe" class="form-label" style="margin-bottom:.3rem">Classe</label>
                 <select class="form-control" id="filter-classe" onchange="filterBooks()" aria-label="Filtra per classe">
                   <option value="">Tutte le classi</option>
-                  <option value="1">1ª</option>
-                  <option value="2">2ª</option>
-                  <option value="3">3ª</option>
-                  <option value="4">4ª</option>
-                  <option value="5">5ª</option>
-                </select>
-              </div>
-              <div>
-                <label for="filter-indirizzo" class="form-label" style="margin-bottom:.3rem">Indirizzo</label>
-                <select class="form-control" id="filter-indirizzo" onchange="filterBooks()" aria-label="Filtra per indirizzo">
-                  <option value="">Tutti gli indirizzi</option>
-                  <option value="Scientifico">Scientifico</option>
-                  <option value="Classico">Classico</option>
-                  <option value="Linguistico">Linguistico</option>
-                  <option value="Liceo Artistico">Artistico</option>
+                  <!-- popolato da JS -->
                 </select>
               </div>
               <div>
@@ -1341,110 +1323,23 @@ footer {
 
       <!-- Tab nuovo annuncio -->
       <div class="tab-panel active" id="tab-nuovo" role="tabpanel" aria-labelledby="tab-btn-nuovo">
-        <div style="max-width:680px">
-          <div class="alert alert-info" style="margin-bottom:1.5rem">
+        <div style="max-width:760px">
+          <div class="alert alert-info" style="margin-bottom:1.5rem" id="vendita-intro-alert">
             <span class="alert-icon" aria-hidden="true">ℹ️</span>
-            <p>Inserisci le informazioni del libro. Più dettagli fornisci, più è facile trovare un acquirente.</p>
+            <p>Seleziona la tua classe e sezione: comparirà l'elenco dei libri di testo adottati. Scegli il libro che vuoi vendere, indica le condizioni e il prezzo.</p>
           </div>
-          <form id="form-nuovo-annuncio" onsubmit="submitNuovoAnnuncio(event)" novalidate>
-            <h3 style="margin-bottom:1.25rem;color:var(--grigio-700);font-size:1rem;text-transform:uppercase;letter-spacing:.05em">Dati del libro</h3>
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label" for="form-titolo">Titolo<span class="required" aria-label="obbligatorio">*</span></label>
-                <input type="text" class="form-control" id="form-titolo" placeholder="es. Matematica.blu 2.0 - Vol. 3" required aria-required="true" />
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="form-autore">Autore<span class="required" aria-label="obbligatorio">*</span></label>
-                <input type="text" class="form-control" id="form-autore" placeholder="es. Bergamini, Barozzi" required aria-required="true" />
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label" for="form-isbn">ISBN</label>
-                <input type="text" class="form-control" id="form-isbn" placeholder="es. 9788808250988" maxlength="13" />
-                <p class="form-hint">Codice a barre sul retro del libro (13 cifre)</p>
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="form-editore">Editore</label>
-                <input type="text" class="form-control" id="form-editore" placeholder="es. Zanichelli" />
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label" for="form-materia">Materia<span class="required" aria-label="obbligatorio">*</span></label>
-                <select class="form-control" id="form-materia" required aria-required="true">
-                  <option value="">Seleziona materia</option>
-                  <option>Matematica</option><option>Italiano</option><option>Storia</option>
-                  <option>Scienze</option><option>Inglese</option><option>Fisica</option>
-                  <option>Latino</option><option>Greco</option><option>Francese</option>
-                  <option>Spagnolo</option><option>Tedesco</option><option>Chimica</option>
-                  <option>Biologia</option><option>Storia dell'Arte</option><option>Filosofia</option>
-                  <option>Religione</option><option>Educazione Fisica</option><option>Informatica</option>
-                  <option>Altro</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="form-classe">Classe<span class="required" aria-label="obbligatorio">*</span></label>
-                <select class="form-control" id="form-classe" required aria-required="true">
-                  <option value="">Seleziona classe</option>
-                  <option value="1">1ª</option><option value="2">2ª</option><option value="3">3ª</option>
-                  <option value="4">4ª</option><option value="5">5ª</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label" for="form-indirizzo">Indirizzo scolastico</label>
-                <select class="form-control" id="form-indirizzo">
-                  <option value="">Qualsiasi / Non specificato</option>
-                  <option>Scientifico</option><option>Classico</option><option>Linguistico</option>
-                  <option>Liceo Artistico</option><option>Scienze Umane</option><option>Tecnico</option>
-                  <option>Professionale</option>
-                </select>
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="form-stato-libro">Stato del libro<span class="required" aria-label="obbligatorio">*</span></label>
-                <select class="form-control" id="form-stato-libro" required aria-required="true">
-                  <option value="">Seleziona stato</option>
-                  <option value="ottimo">Ottimo — praticamente nuovo</option>
-                  <option value="buono">Buono — poche sottolineature</option>
-                  <option value="discreto">Discreto — uso evidente, leggibile</option>
-                  <option value="usurato">Usurato — molte annotazioni/usura</option>
-                </select>
-              </div>
-            </div>
-            <div class="form-row">
-              <div class="form-group">
-                <label class="form-label" for="form-prezzo">Prezzo richiesto (€)<span class="required" aria-label="obbligatorio">*</span></label>
-                <input type="number" class="form-control" id="form-prezzo" placeholder="es. 12.00" min="0" step="0.50" required aria-required="true" />
-                <p class="form-hint">Prezzo in euro. Il pagamento avviene di presenza a scuola.</p>
-              </div>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="form-descrizione">Descrizione</label>
-              <textarea class="form-control" id="form-descrizione" rows="3" placeholder="Descrivi le condizioni del libro: sottolineature, allegati presenti, eventuali mancanze…" aria-describedby="form-descrizione-hint"></textarea>
-              <p class="form-hint" id="form-descrizione-hint">Sii preciso: aiuterà l'acquirente a valutare meglio il libro.</p>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="form-immagine">Foto del libro</label>
-              <div class="upload-area" onclick="document.getElementById('form-immagine').click()" role="button" tabindex="0" aria-label="Carica foto del libro" onkeydown="if(event.key==='Enter')this.click()">
-                <span style="font-size:2rem" aria-hidden="true">📷</span>
-                <p>Clicca per scegliere una foto <span style="color:var(--grigio-300)">(opzionale)</span></p>
-                <p>JPG, PNG · max 5 MB</p>
-              </div>
-              <input type="file" id="form-immagine" accept="image/*" style="display:none" aria-label="Scegli immagine" />
-            </div>
 
-            <div class="payment-notice" role="note" aria-label="Nota pagamento">
-              <span class="payment-notice-icon" aria-hidden="true">🤝</span>
-              <p>Il <strong>pagamento avviene di presenza</strong> al momento dello scambio a scuola. Non è previsto alcun pagamento online.</p>
-            </div>
+          <div class="form-group">
+            <label class="form-label" for="vendita-classe-sezione">Classe e sezione<span class="required" aria-label="obbligatorio">*</span></label>
+            <select class="form-control" id="vendita-classe-sezione" onchange="onClasseSezioneChangeVendita()" aria-required="true">
+              <option value="">Seleziona classe e sezione</option>
+              <!-- popolato da JS -->
+            </select>
+          </div>
 
-            <div style="margin-top:1.5rem;display:flex;gap:1rem;flex-wrap:wrap">
-              <button type="submit" class="btn btn-primary btn-lg">📤 Pubblica annuncio</button>
-              <button type="button" class="btn btn-ghost" onclick="resetFormAnnuncio()">↺ Azzera</button>
-            </div>
-          </form>
+          <div id="vendita-lista-testi"></div>
+
+          <div id="vendita-form-finale" style="display:none"></div>
         </div>
       </div>
 
@@ -1519,17 +1414,16 @@ footer {
         <h2>3. Responsabilità degli utenti</h2>
         <p>Chi pubblica un annuncio si impegna a:</p>
         <ul>
-          <li>Descrivere in modo veritiero e preciso le condizioni del libro</li>
-          <li>Indicare correttamente titolo, autore, ISBN, editore, materia e classe</li>
-          <li>Segnalare la presenza o assenza di allegati (CD, schede, fascicoli supplementari)</li>
+          <li>Selezionare correttamente il libro dall'elenco dei testi adottati per la propria classe</li>
+          <li>Indicare onestamente le condizioni del libro</li>
           <li>Presentarsi puntuale all'appuntamento confermato</li>
           <li>Comunicare tempestivamente eventuali rinunce o indisponibilità</li>
         </ul>
 
-        <h2>4. Verifica ISBN e dati del libro</h2>
-        <p>L'ISBN (codice a 13 cifre sul retro del libro) permette l'identificazione univoca del volume. Si raccomanda di verificarlo prima di pubblicare un annuncio per evitare errori. La piattaforma può segnalare ISBN non riconosciuti, ma non garantisce la correttezza di tutti i dati.</p>
+        <h2>4. Elenco dei libri di testo</h2>
+        <p>L'elenco dei libri adottati per ogni classe e sezione è predefinito dalla piattaforma sulla base delle adozioni ufficiali della scuola. In fase di pubblicazione dell'annuncio lo studente seleziona il proprio libro dall'elenco, così da garantire dati corretti (materia, autore, titolo, volume, editore, ISBN).</p>
 
-        <h2>5. Stato del libro e allegati</h2>
+        <h2>5. Stato del libro</h2>
         <p>Lo stato del libro deve essere indicato onestamente tra le categorie disponibili:</p>
         <ul>
           <li><strong>Ottimo</strong> — praticamente nuovo, nessuna o pochissima sottolineatura</li>
@@ -1537,7 +1431,6 @@ footer {
           <li><strong>Discreto</strong> — uso evidente, pagine integre e leggibili</li>
           <li><strong>Usurato</strong> — molte annotazioni, copertina con segni, comunque consultabile</li>
         </ul>
-        <p>La presenza o assenza di allegati (CD, mappe, schede) deve essere sempre indicata nella descrizione.</p>
 
         <h2>6. Scambio a scuola</h2>
         <div class="highlight-box">
@@ -1559,7 +1452,6 @@ footer {
 
         <h2>9. Contenuti vietati</h2>
         <ul>
-          <li>Non è consentito pubblicare libri non scolastici o materiali estranei all'attività didattica</li>
           <li>Non è consentito pubblicare annunci duplicati per lo stesso volume</li>
           <li>Sono vietati annunci con informazioni false o fuorvianti</li>
           <li>Non è consentito condividere dati personali (telefono, indirizzo) negli annunci pubblici</li>
@@ -1672,10 +1564,6 @@ footer {
       </div>
     </div>
     <div class="container" style="padding-bottom:3rem">
-      <div class="alert alert-warning" style="margin-bottom:1.5rem">
-        <span class="alert-icon" aria-hidden="true">⚠️</span>
-        <p><strong>Modalità demo.</strong> In questa versione dimostrativa le azioni di moderazione non sono permanenti.</p>
-      </div>
 
       <!-- Statistiche -->
       <div class="stats-grid" style="margin-bottom:2rem" aria-label="Statistiche piattaforma">
@@ -1689,6 +1577,7 @@ footer {
 
       <div class="tabs" role="tablist" aria-label="Sezioni area admin">
         <button class="tab-btn active" role="tab" aria-selected="true" aria-controls="tab-adm-annunci" id="tab-btn-adm-annunci" onclick="switchTab('admin','annunci')">📚 Annunci</button>
+        <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-adm-classi" id="tab-btn-adm-classi" onclick="switchTab('admin','classi')">🏫 Classi e Libri</button>
         <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-adm-prenotazioni" id="tab-btn-adm-prenotazioni" onclick="switchTab('admin','prenotazioni')">📋 Prenotazioni</button>
         <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-adm-segnalazioni" id="tab-btn-adm-segnalazioni" onclick="switchTab('admin','segnalazioni')">🚨 Segnalazioni</button>
         <button class="tab-btn" role="tab" aria-selected="false" aria-controls="tab-adm-utenti" id="tab-btn-adm-utenti" onclick="switchTab('admin','utenti')">👥 Utenti</button>
@@ -1696,6 +1585,9 @@ footer {
 
       <div class="tab-panel active" id="tab-adm-annunci" role="tabpanel" aria-labelledby="tab-btn-adm-annunci">
         <div id="admin-annunci-table"></div>
+      </div>
+      <div class="tab-panel" id="tab-adm-classi" role="tabpanel" aria-labelledby="tab-btn-adm-classi">
+        <div id="admin-classi-content"></div>
       </div>
       <div class="tab-panel" id="tab-adm-prenotazioni" role="tabpanel" aria-labelledby="tab-btn-adm-prenotazioni">
         <div id="admin-prenotazioni-table"></div>
@@ -1727,30 +1619,23 @@ footer {
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;max-width:800px" class="assist-grid">
 
         <!-- Form segnalazione -->
-        <div class="card card-body">
-          <h3 style="margin-bottom:1rem">📢 Invia una segnalazione</h3>
+        <div class="card card-body" id="assistenza-form-card">
+          <h3 style="margin-bottom:1rem">📢 Richiedi assistenza</h3>
           <form id="form-segnalazione" onsubmit="submitSegnalazione(event)" novalidate>
             <div class="form-group">
-              <label class="form-label" for="seg-tipo">Tipo di segnalazione<span class="required" aria-label="obbligatorio">*</span></label>
+              <label class="form-label" for="seg-tipo">Che problema hai riscontrato?<span class="required" aria-label="obbligatorio">*</span></label>
               <select class="form-control" id="seg-tipo" required aria-required="true">
-                <option value="">Seleziona tipo</option>
+                <option value="">Seleziona una problematica</option>
                 <option value="annuncio_errato">Annuncio con dati errati</option>
                 <option value="isbn_errato">ISBN non corretto</option>
                 <option value="contenuto_inappropriato">Contenuto inappropriato</option>
-                <option value="problema_tecnico">Problema tecnico</option>
+                <option value="problema_prenotazione">Problema con una prenotazione</option>
+                <option value="problema_account">Problema con il mio account</option>
+                <option value="problema_tecnico">Problema tecnico del sito</option>
                 <option value="altro">Altro</option>
               </select>
             </div>
-            <div class="form-group">
-              <label class="form-label" for="seg-libro">ID Annuncio (opzionale)</label>
-              <input type="text" class="form-control" id="seg-libro" placeholder="es. l3" aria-label="ID dell'annuncio segnalato" />
-              <p class="form-hint">Visibile nell'URL del dettaglio libro</p>
-            </div>
-            <div class="form-group">
-              <label class="form-label" for="seg-messaggio">Descrizione<span class="required" aria-label="obbligatorio">*</span></label>
-              <textarea class="form-control" id="seg-messaggio" rows="4" placeholder="Descrivi il problema in modo dettagliato…" required aria-required="true"></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary btn-full">Invia segnalazione</button>
+            <button type="submit" class="btn btn-primary btn-full">Invia richiesta</button>
           </form>
         </div>
 
@@ -1778,116 +1663,23 @@ footer {
           <p style="color:var(--grigio-500);font-size:.9rem">Accedi per gestire i tuoi annunci e prenotazioni</p>
         </div>
 
-        <!-- Demo banner -->
-        <div class="alert alert-info" id="demo-banner" style="margin-bottom:1.5rem">
-          <span class="alert-icon" aria-hidden="true">🧪</span>
-          <div>
-            <p style="font-weight:600;margin-bottom:.3rem">Modalità demo attiva</p>
-            <p style="font-size:.82rem;margin:0">Usa <strong>marco@demo.it</strong> / <strong>demo1234</strong> per esplorare come studente.<br>Oppure <strong>admin@demo.it</strong> / <strong>admin1234</strong> per l'admin.</p>
-          </div>
-        </div>
-
-        <!-- Auth card -->
+        <!-- Auth card: solo Google, dominio scolastico -->
         <div class="card">
-          <!-- Tab login / registrati -->
-          <div style="display:flex;border-bottom:2px solid var(--grigio-200)">
-            <button class="tab-btn active" id="auth-tab-login" onclick="switchAuthTab('login')" style="flex:1;border-radius:0">Accedi</button>
-            <button class="tab-btn" id="auth-tab-register" onclick="switchAuthTab('register')" style="flex:1;border-radius:0">Registrati</button>
-          </div>
-
-          <div class="card-body" style="padding:1.5rem">
+          <div class="card-body" style="padding:2rem 1.5rem;text-align:center">
 
             <!-- Errore auth -->
-            <div id="auth-error" class="alert alert-danger" style="display:none;margin-bottom:1rem">
+            <div id="auth-error" class="alert alert-danger" style="display:none;margin-bottom:1.25rem;text-align:left">
               <span class="alert-icon" aria-hidden="true">❌</span>
               <p id="auth-error-msg"></p>
             </div>
 
-            <!-- FORM LOGIN -->
-            <form id="form-login" onsubmit="submitLogin(event)" novalidate style="display:block">
-              <div class="form-group">
-                <label class="form-label" for="login-email">Email<span class="required" aria-label="obbligatorio">*</span></label>
-                <input type="email" class="form-control" id="login-email" placeholder="la-tua@email.it" required aria-required="true" autocomplete="email" />
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="login-password">
-                  Password<span class="required" aria-label="obbligatorio">*</span>
-                  <button type="button" onclick="showResetPassword()" style="float:right;background:none;border:none;color:var(--blu);font-size:.8rem;cursor:pointer;font-weight:500">Password dimenticata?</button>
-                </label>
-                <div style="position:relative">
-                  <input type="password" class="form-control" id="login-password" placeholder="••••••••" required aria-required="true" autocomplete="current-password" style="padding-right:2.8rem" />
-                  <button type="button" onclick="togglePasswordVisibility('login-password','eye-login')" style="position:absolute;right:.7rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--grigio-500);font-size:1rem" aria-label="Mostra/nascondi password" id="eye-login">👁</button>
-                </div>
-              </div>
-              <button type="submit" class="btn btn-primary btn-full btn-lg" id="btn-login-submit">Accedi al tuo account</button>
-            </form>
-
-            <!-- FORM REGISTRAZIONE -->
-            <form id="form-register" onsubmit="submitRegister(event)" novalidate style="display:none">
-              <div class="form-row">
-                <div class="form-group">
-                  <label class="form-label" for="reg-nome">Nome<span class="required" aria-label="obbligatorio">*</span></label>
-                  <input type="text" class="form-control" id="reg-nome" placeholder="Mario" required aria-required="true" autocomplete="given-name" />
-                </div>
-                <div class="form-group">
-                  <label class="form-label" for="reg-cognome">Cognome<span class="required" aria-label="obbligatorio">*</span></label>
-                  <input type="text" class="form-control" id="reg-cognome" placeholder="Rossi" required aria-required="true" autocomplete="family-name" />
-                </div>
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="reg-email">Email<span class="required" aria-label="obbligatorio">*</span></label>
-                <input type="email" class="form-control" id="reg-email" placeholder="la-tua@email.it" required aria-required="true" autocomplete="email" />
-              </div>
-              <div class="form-group">
-                <label class="form-label" for="reg-password">
-                  Password<span class="required" aria-label="obbligatorio">*</span>
-                </label>
-                <div style="position:relative">
-                  <input type="password" class="form-control" id="reg-password" placeholder="min. 6 caratteri" required aria-required="true" minlength="6" autocomplete="new-password" style="padding-right:2.8rem" />
-                  <button type="button" onclick="togglePasswordVisibility('reg-password','eye-reg')" style="position:absolute;right:.7rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--grigio-500);font-size:1rem" aria-label="Mostra/nascondi password" id="eye-reg">👁</button>
-                </div>
-                <p class="form-hint" id="password-strength-hint"></p>
-              </div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label class="form-label" for="reg-classe">Classe</label>
-                  <select class="form-control" id="reg-classe">
-                    <option value="">Seleziona</option>
-                    <option>1A</option><option>1B</option><option>1C</option><option>1D</option>
-                    <option>2A</option><option>2B</option><option>2C</option><option>2D</option>
-                    <option>3A</option><option>3B</option><option>3C</option><option>3D</option>
-                    <option>4A</option><option>4B</option><option>4C</option><option>4D</option>
-                    <option>5A</option><option>5B</option><option>5C</option><option>5D</option>
-                  </select>
-                </div>
-                <div class="form-group">
-                  <label class="form-label" for="reg-indirizzo">Indirizzo</label>
-                  <select class="form-control" id="reg-indirizzo">
-                    <option value="">Seleziona</option>
-                    <option>Scientifico</option><option>Classico</option>
-                    <option>Linguistico</option><option>Liceo Artistico</option>
-                    <option>Scienze Umane</option>
-                  </select>
-                </div>
-              </div>
-              <div class="form-group">
-                <label style="display:flex;gap:.6rem;align-items:flex-start;cursor:pointer">
-                  <input type="checkbox" id="reg-privacy" required style="margin-top:.2rem;flex-shrink:0" />
-                  <span style="font-size:.83rem;color:var(--grigio-700)">Accetto il <a href="#" onclick="navigate('regolamento');return false">Regolamento</a> e l'<a href="#" onclick="navigate('privacy');return false">Informativa Privacy</a><span class="required" aria-label="obbligatorio">*</span></span>
-                </label>
-              </div>
-              <button type="submit" class="btn btn-primary btn-full btn-lg" id="btn-register-submit">Crea account</button>
-            </form>
-
-            <!-- Divisore Google -->
-            <div style="display:flex;align-items:center;gap:1rem;margin:1.25rem 0">
-              <div style="flex:1;height:1px;background:var(--grigio-200)"></div>
-              <span style="font-size:.8rem;color:var(--grigio-500)">oppure</span>
-              <div style="flex:1;height:1px;background:var(--grigio-200)"></div>
-            </div>
+            <p style="color:var(--grigio-700);font-size:.92rem;margin-bottom:1.5rem">
+              Accedi o registrati con il tuo account Google istituzionale.<br>
+              <strong id="login-dominio-hint" style="color:var(--blu)"></strong> è l'unico dominio email ammesso.
+            </p>
 
             <!-- Google button -->
-            <button type="button" class="btn btn-ghost btn-full" onclick="submitGoogle()" id="btn-google-login" style="gap:.75rem;border-color:var(--grigio-300)">
+            <button type="button" class="btn btn-primary btn-full btn-lg" onclick="submitGoogle()" id="btn-google-login" style="gap:.75rem">
               <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
                 <path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/>
                 <path fill="#FF3D00" d="M6.306 14.691l6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/>
@@ -1897,6 +1689,9 @@ footer {
               Continua con Google
             </button>
 
+            <p style="font-size:.78rem;color:var(--grigio-500);margin-top:1.5rem">
+              Accedendo accetti il <a href="#" onclick="navigate('regolamento');return false">Regolamento</a> e l'<a href="#" onclick="navigate('privacy');return false">Informativa Privacy</a>.
+            </p>
           </div>
         </div>
 
@@ -1934,102 +1729,6 @@ footer {
   </section>
   <!-- END PROFILO -->
 
-  <!-- ═══════════════════════════════════════════════════════════
-       ADMIN SETUP — Pagina segreta per promozione admin
-  ════════════════════════════════════════════════════════════ -->
-  <section id="view-admin-setup" class="view" aria-label="Configurazione admin">
-    <div class="container" style="max-width:520px;padding:3rem 1rem">
-
-      <!-- Titolo -->
-      <div style="text-align:center;margin-bottom:2rem">
-        <div style="font-size:3rem;margin-bottom:.5rem">🔐</div>
-        <h1 style="font-size:1.6rem;color:var(--blu-scuro);margin-bottom:.4rem">Configurazione Admin</h1>
-        <p style="color:var(--grigio-500);font-size:.9rem">Inserisci il codice segreto per ottenere i privilegi di amministratore.</p>
-      </div>
-
-      <!-- Card -->
-      <div class="card" style="padding:2rem">
-
-        <!-- Stato utente loggato -->
-        <div id="admin-setup-user-info" style="background:var(--grigio-100);border-radius:8px;padding:.75rem 1rem;margin-bottom:1.5rem;display:none">
-          <p style="margin:0;font-size:.88rem;color:var(--grigio-700)">
-            Loggato come: <strong id="admin-setup-email" style="color:var(--blu-scuro)"></strong>
-          </p>
-          <p id="admin-setup-ruolo-attuale" style="margin:.25rem 0 0;font-size:.82rem;color:var(--grigio-500)"></p>
-        </div>
-
-        <!-- Form codice segreto -->
-        <div id="admin-setup-form-area">
-          <label for="admin-secret-input" style="display:block;font-weight:600;font-size:.9rem;color:var(--grigio-800);margin-bottom:.5rem">
-            Codice segreto
-          </label>
-          <div style="position:relative;margin-bottom:1rem">
-            <input
-              type="password"
-              id="admin-secret-input"
-              placeholder="Inserisci il codice…"
-              autocomplete="off"
-              style="width:100%;padding:.75rem 3rem .75rem 1rem;border:1.5px solid var(--grigio-300);border-radius:8px;font-size:1rem;outline:none;transition:border-color .2s;box-sizing:border-box"
-              oninput="clearAdminSetupMsg()"
-              onkeydown="if(event.key==='Enter')submitAdminSetup()"
-            />
-            <button
-              type="button"
-              title="Mostra/nascondi codice"
-              style="position:absolute;right:.75rem;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;font-size:1.1rem;color:var(--grigio-500);padding:0"
-              onclick="toggleAdminSecretVisibility()"
-              id="admin-secret-toggle"
-              aria-label="Mostra/nascondi codice"
-            >👁</button>
-          </div>
-
-          <!-- Messaggio esito -->
-          <div id="admin-setup-msg" style="display:none;border-radius:8px;padding:.65rem 1rem;font-size:.88rem;margin-bottom:1rem"></div>
-
-          <!-- Bottone -->
-          <button
-            id="admin-setup-btn"
-            class="btn btn-primary btn-full"
-            onclick="submitAdminSetup()"
-            style="font-size:1rem"
-          >
-            🔑 Attiva privilegi admin
-          </button>
-        </div>
-
-        <!-- Stato già admin -->
-        <div id="admin-setup-already" style="display:none;text-align:center">
-          <div style="font-size:2.5rem;margin-bottom:.75rem">✅</div>
-          <p style="font-weight:700;color:var(--verde);font-size:1.05rem;margin-bottom:.5rem">Sei già amministratore!</p>
-          <p style="color:var(--grigio-500);font-size:.88rem;margin-bottom:1.5rem">Il tuo account ha i privilegi di amministrazione attivi.</p>
-          <button class="btn btn-primary" onclick="navigate('admin')">⚙️ Vai all'Area Admin</button>
-          <br><br>
-          <button class="btn btn-ghost btn-sm" onclick="confirmRevokeAdmin()" style="color:var(--rosso);font-size:.8rem">
-            Rimuovi privilegi admin
-          </button>
-        </div>
-
-        <!-- Stato non loggato -->
-        <div id="admin-setup-not-logged" style="display:none;text-align:center">
-          <div style="font-size:2.5rem;margin-bottom:.75rem">🔒</div>
-          <p style="font-weight:600;color:var(--grigio-700);margin-bottom:.5rem">Accesso richiesto</p>
-          <p style="color:var(--grigio-500);font-size:.88rem;margin-bottom:1.5rem">Devi essere loggato per poter configurare i privilegi admin.</p>
-          <button class="btn btn-primary" onclick="navigate('login')">🔑 Accedi</button>
-        </div>
-
-      </div><!-- end card -->
-
-      <!-- Link torna indietro -->
-      <div style="text-align:center;margin-top:1.5rem">
-        <a href="#" onclick="history.back();return false" style="color:var(--grigio-500);font-size:.85rem;text-decoration:none">
-          ← Torna indietro
-        </a>
-      </div>
-
-    </div>
-  </section>
-  <!-- END ADMIN SETUP -->
-
 </main>
 
 <!-- ═══════════════════════════════════════════════════════════
@@ -2066,7 +1765,6 @@ footer {
       <p>
         <a href="#" onclick="navigate('privacy');return false" style="color:#6b7a90">Privacy</a>
         · <a href="#" onclick="navigate('regolamento');return false" style="color:#6b7a90">Regolamento</a>
-        · <a href="#" onclick="navigate('admin-setup');return false" style="color:#3d4f66;font-size:.78rem" title="Configurazione admin">⚙</a>
       </p>
     </div>
   </div>
@@ -2100,29 +1798,13 @@ footer {
 // ============================================================
 
 const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyBxrZAcRCoxW2mEd-eG5fJGOqNNGJRQWeY",
-  authDomain: "mercatino-libri-8e5cc.firebaseapp.com",
-  projectId: "mercatino-libri-8e5cc",
-  storageBucket: "mercatino-libri-8e5cc.firebasestorage.app",
-  messagingSenderId: "178530646642",
-  appId: "1:178530646642:web:3c1581fac69b196763a0eb",
-  measurementId: "G-SFQ1ZEZ57P"
+  apiKey: "AIzaSyAlqMY322oOw_3WkRhlv1zmTJfbdtPyEz0",
+  authDomain: "mercatino-libri-scuola.firebaseapp.com",
+  projectId: "mercatino-libri-scuola",
+  storageBucket: "mercatino-libri-scuola.firebasestorage.app",
+  messagingSenderId: "756146902728",
+  appId: "1:756146902728:web:4034e552f01301d54c37fd"
 };
-
-// ── MODALITÀ DEMO ────────────────────────────────────────────
-// Se non hai ancora configurato Firebase, la app funziona in
-// modalità demo: il login è simulato con credenziali di test.
-// Imposta su false quando inserisci le tue credenziali reali.
-const FIREBASE_DEMO_MODE = false;
-
-// ── CREDENZIALI DEMO (solo se FIREBASE_DEMO_MODE = true) ─────
-const DEMO_ACCOUNTS = [
-  { email: "marco@demo.it",  password: "demo1234", uid: "u1", nome: "Marco",  cognome: "Rossi",    classe: "3A", indirizzo: "Scientifico", ruolo: "studente" },
-  { email: "sofia@demo.it",  password: "demo1234", uid: "u2", nome: "Sofia",  cognome: "Bianchi",  classe: "4B", indirizzo: "Linguistico", ruolo: "studente" },
-  { email: "luca@demo.it",   password: "demo1234", uid: "u3", nome: "Luca",   cognome: "Ferrari",  classe: "2C", indirizzo: "Classico",    ruolo: "studente" },
-  { email: "giulia@demo.it", password: "demo1234", uid: "u4", nome: "Giulia", cognome: "Marino",   classe: "5A", indirizzo: "Scientifico", ruolo: "studente" },
-  { email: "admin@demo.it",  password: "admin1234", uid: "admin1", nome: "Admin", cognome: "Scuola", classe: null, indirizzo: null, ruolo: "admin" }
-];
 
 </script>
 <script>
@@ -2138,6 +1820,8 @@ const DB = {
   utenti: [],
   prenotazioni: [],
   segnalazioni: [],
+  classi_sezioni: [],
+  libri_testo: [],
   luoghi_scambio: [
     { id: "ls1", nome: "Atrio principale", descrizione: "Vicino alla segreteria, piano terra" },
     { id: "ls2", nome: "Biblioteca scolastica", descrizione: "1° piano, aperta dalle 8:00 alle 14:00" },
@@ -2146,6 +1830,24 @@ const DB = {
     { id: "ls5", nome: "Portineria", descrizione: "Ingresso principale, sempre presidiata" }
   ]
 };
+
+// ── CLASSI E SEZIONI / LIBRI DI TESTO ──────────────────────────
+// Gestiti interamente dall'amministratore dal pannello Admin:
+// - le classi e sezioni si aggiungono/rimuovono da "Classi e Libri"
+// - i libri di testo per ciascuna classe si caricano da file Excel
+// Nessun dato statico: tutto viene letto da Firestore (collezioni
+// "classi_sezioni" e "libri_testo").
+
+function getClassiSezioniLabels() {
+  return DB.classi_sezioni
+    .map(c => c.label || c.id)
+    .slice()
+    .sort((a, b) => a.localeCompare(b));
+}
+
+function getTestiPerClasseSezione(classeSezione) {
+  return DB.libri_testo.filter(t => t.classe_sezione === classeSezione);
+}
 
 const SESSION = {
   utenteCorrente: null,
@@ -2162,19 +1864,58 @@ function getDb() {
 // ── LOAD ALL DATA ─────────────────────────────────────────────
 async function loadAllData() {
   const fs = getDb();
+  const isAdmin = AUTH.profile?.ruolo === 'admin';
+  const richieste = [
+    { key: 'libri',          query: fs.collection('libri').orderBy('created_at', 'desc') },
+    { key: 'utenti',         query: fs.collection('utenti') },
+    { key: 'prenotazioni',   query: fs.collection('prenotazioni').orderBy('created_at', 'desc') },
+    { key: 'classi_sezioni', query: fs.collection('classi_sezioni') },
+    { key: 'libri_testo',    query: fs.collection('libri_testo') }
+  ];
+  // Le segnalazioni sono leggibili solo dall'admin (dati privati degli
+  // studenti): le richiediamo solo per lui, per non generare un errore
+  // di permesso atteso (e inutile) per tutti gli altri utenti.
+  if (isAdmin) {
+    richieste.push({ key: 'segnalazioni', query: fs.collection('segnalazioni').orderBy('created_at', 'desc') });
+  }
+
+  const risultati = await Promise.allSettled(richieste.map(r => r.query.get()));
+  const collezioniFallite = [];
+
+  risultati.forEach((esito, i) => {
+    const key = richieste[i].key;
+    if (esito.status === 'fulfilled') {
+      DB[key] = esito.value.docs.map(d => ({ id: d.id, ...d.data() }));
+    } else {
+      collezioniFallite.push(key);
+      console.warn(`loadAllData: lettura di "${key}" fallita:`, esito.reason);
+      // Non azzeriamo DB[key]: meglio mantenere l'ultimo dato noto
+      // (es. quello caricato da loadPublicConfigData) che perderlo.
+    }
+  });
+
+  if (collezioniFallite.length > 0 && typeof showToast === 'function') {
+    showToast(`Impossibile leggere: ${collezioniFallite.join(', ')}. Controlla le regole di sicurezza Firestore.`, 'error', 7000);
+  }
+}
+
+// ── DATI PUBBLICI (leggibili anche senza login) ─────────────────
+// Classi/sezioni e libri di testo devono essere visibili anche a chi
+// non ha ancora effettuato l'accesso (catalogo, registrazione).
+// Le regole di sicurezza Firestore devono permettere la lettura
+// pubblica di "classi_sezioni" e "libri_testo" (scrittura riservata
+// agli amministratori).
+async function loadPublicConfigData() {
+  const fs = getDb();
   try {
-    const [libriSnap, utentiSnap, prenSnap, segnSnap] = await Promise.all([
-      fs.collection('libri').orderBy('created_at', 'desc').get(),
-      fs.collection('utenti').get(),
-      fs.collection('prenotazioni').orderBy('created_at', 'desc').get(),
-      fs.collection('segnalazioni').orderBy('created_at', 'desc').get()
+    const [classiSnap, testiSnap] = await Promise.all([
+      fs.collection('classi_sezioni').get(),
+      fs.collection('libri_testo').get()
     ]);
-    DB.libri        = libriSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-    DB.utenti       = utentiSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-    DB.prenotazioni = prenSnap.docs.map(d => ({ id: d.id, ...d.data() }));
-    DB.segnalazioni = segnSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    DB.classi_sezioni = classiSnap.docs.map(d => ({ id: d.id, ...d.data() }));
+    DB.libri_testo    = testiSnap.docs.map(d => ({ id: d.id, ...d.data() }));
   } catch(e) {
-    console.warn('loadAllData error:', e);
+    console.warn('loadPublicConfigData error:', e);
   }
 }
 
@@ -2248,6 +1989,55 @@ async function fsGetUtente(uid) {
   return snap.exists ? { id: snap.id, ...snap.data() } : null;
 }
 
+// ── CLASSI E SEZIONI (gestite dall'admin) ───────────────────────
+async function fsAddClasseSezione(label) {
+  const fs = getDb();
+  await fs.collection('classi_sezioni').doc(label).set({
+    label,
+    created_at: new Date().toISOString().split('T')[0]
+  });
+  if (!DB.classi_sezioni.find(c => (c.label || c.id) === label)) {
+    DB.classi_sezioni.push({ id: label, label });
+  }
+}
+
+async function fsDeleteClasseSezione(label) {
+  await getDb().collection('classi_sezioni').doc(label).delete();
+  DB.classi_sezioni = DB.classi_sezioni.filter(c => (c.label || c.id) !== label);
+}
+
+// Sostituisce l'intero elenco dei libri di testo di una classe/sezione
+// (usato dopo il caricamento di un file Excel dal pannello admin).
+async function fsReplaceLibriTestoPerSezione(classeSezione, listaLibri) {
+  const fs = getDb();
+  const batch = fs.batch();
+
+  const esistenti = DB.libri_testo.filter(t => t.classe_sezione === classeSezione);
+  esistenti.forEach(t => {
+    if (t.id) batch.delete(fs.collection('libri_testo').doc(t.id));
+  });
+
+  const nuovi = [];
+  listaLibri.forEach(libro => {
+    const ref = fs.collection('libri_testo').doc();
+    const data = {
+      materia: libro.materia || '',
+      autore: libro.autore || '',
+      titolo: libro.titolo || '',
+      volume: libro.volume || '',
+      editore: libro.editore || '',
+      isbn: libro.isbn || '',
+      classe_sezione: classeSezione,
+      created_at: new Date().toISOString().split('T')[0]
+    };
+    batch.set(ref, data);
+    nuovi.push({ id: ref.id, ...data });
+  });
+
+  await batch.commit();
+  DB.libri_testo = DB.libri_testo.filter(t => t.classe_sezione !== classeSezione).concat(nuovi);
+}
+
 // ── LABEL HELPERS ─────────────────────────────────────────────
 function statoLibroLabel(stato) {
   return { ottimo: "Ottimo", buono: "Buono", discreto: "Discreto", usurato: "Usurato" }[stato] || stato;
@@ -2262,6 +2052,18 @@ function formatDate(dateStr) {
   if (!dateStr) return "";
   const d = new Date(dateStr + "T00:00:00");
   return d.toLocaleDateString("it-IT", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+}
+function formatDateBreve(dateStr) {
+  if (!dateStr) return "";
+  const d = new Date(dateStr + "T00:00:00");
+  return d.toLocaleDateString("it-IT", { weekday: "short", day: "numeric", month: "short" });
+}
+function formatDateTime(isoStr) {
+  if (!isoStr) return "";
+  const d = new Date(isoStr);
+  if (isNaN(d.getTime())) return isoStr;
+  return d.toLocaleDateString("it-IT", { day: "2-digit", month: "2-digit", year: "numeric" }) +
+    " " + d.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" });
 }
 function formatPrice(p) {
   return "€ " + parseFloat(p).toFixed(2).replace(".", ",");
@@ -2286,7 +2088,34 @@ let firebaseApp   = null;
 let firebaseAuth  = null;
 let googleProvider = null;
 
-const ADMIN_SECRET_CODE = 'vinci2025admin';
+// ── EMAIL ADMIN PERMANENTI ──────────────────────────────────────
+// Chi accede con una di queste email ottiene (e mantiene sempre) i
+// privilegi di amministratore, ad ogni login, indipendentemente dal
+// codice segreto, dal browser usato o da eventuali revoche passate.
+// Sostituisci il valore qui sotto con la/le tue email reali.
+const ADMIN_EMAILS = [
+  'salvatore.dagata@dcstrieste.it'
+];
+
+function isEmailAdminPermanente(email) {
+  if (!email) return false;
+  return ADMIN_EMAILS.map(e => e.toLowerCase()).includes(email.toLowerCase());
+}
+
+// ── DOMINIO EMAIL SCOLASTICO ─────────────────────────────────────
+// Solo le email che terminano con questo dominio possono registrarsi
+// e accedere alla piattaforma (sia con email/password sia con Google).
+// Sostituisci con il dominio email ufficiale della tua scuola.
+// IMPORTANTE: questo controllo lato client migliora l'esperienza
+// utente ma NON basta da solo — vanno impostate anche le regole di
+// sicurezza Firestore (vedi le istruzioni fornite separatamente),
+// perché un controllo solo in JavaScript può essere aggirato.
+const DOMINIO_EMAIL_SCUOLA = 'dcstrieste.it';
+
+function isEmailDominioScuola(email) {
+  if (!email) return false;
+  return email.toLowerCase().endsWith('@' + DOMINIO_EMAIL_SCUOLA.toLowerCase());
+}
 
 function initFirebase() {
   if (firebaseApp) return;
@@ -2295,14 +2124,34 @@ function initFirebase() {
   googleProvider = new firebase.auth.GoogleAuthProvider();
   googleProvider.addScope('profile');
   googleProvider.addScope('email');
+  // Suggerisce a Google di mostrare solo account di questo dominio
+  // (aiuta l'utente, ma non sostituisce il controllo dopo l'accesso)
+  googleProvider.setCustomParameters({ hd: DOMINIO_EMAIL_SCUOLA });
 
   firebaseAuth.onAuthStateChanged(async (fbUser) => {
     if (fbUser) {
+      const emailAdmin = isEmailAdminPermanente(fbUser.email);
+
+      // Blocca account con email fuori dal dominio scolastico (a meno
+      // che non siano nella whitelist admin). Copre anche il caso di
+      // account creati prima di attivare questa restrizione.
+      if (!emailAdmin && !isEmailDominioScuola(fbUser.email)) {
+        await firebaseAuth.signOut();
+        AUTH.user = null;
+        AUTH.profile = null;
+        SESSION.utenteCorrente = null;
+        AUTH.ready = true;
+        AUTH.dominioNonValido = true;
+        AUTH.listeners.forEach(fn => fn(null));
+        return;
+      }
+      AUTH.dominioNonValido = false;
+
       // Carica profilo da Firestore
       let fsProfile = await fsGetUtente(fbUser.uid);
+
       if (!fsProfile) {
         // Prima volta: crea profilo
-        const adminUids = JSON.parse(localStorage.getItem('mercatino_admin_uids') || '[]');
         fsProfile = {
           nome:      fbUser.displayName ? fbUser.displayName.split(' ')[0] : 'Utente',
           cognome:   fbUser.displayName ? fbUser.displayName.split(' ').slice(1).join(' ') : '',
@@ -2310,17 +2159,15 @@ function initFirebase() {
           avatar:    fbUser.photoURL || null,
           classe:    null,
           indirizzo: null,
-          ruolo:     adminUids.includes(fbUser.uid) ? 'admin' : 'studente',
+          ruolo:     emailAdmin ? 'admin' : 'studente',
           created_at: new Date().toISOString().split('T')[0]
         };
         await fsUpsertUtente(fbUser.uid, fsProfile);
-      } else {
-        // Controlla se è stato promosso admin localmente
-        const adminUids = JSON.parse(localStorage.getItem('mercatino_admin_uids') || '[]');
-        if (adminUids.includes(fbUser.uid) && fsProfile.ruolo !== 'admin') {
-          fsProfile.ruolo = 'admin';
-          await fsUpsertUtente(fbUser.uid, { ruolo: 'admin' });
-        }
+      } else if (emailAdmin && fsProfile.ruolo !== 'admin') {
+        // Email in whitelist: ripristina sempre i privilegi admin,
+        // anche se in passato erano stati revocati.
+        fsProfile.ruolo = 'admin';
+        await fsUpsertUtente(fbUser.uid, { ruolo: 'admin' });
       }
 
       AUTH.user = fbUser;
@@ -2358,29 +2205,13 @@ function onAuthChange(fn) {
 }
 
 // ── LOGIN / REGISTER ──────────────────────────────────────────
-async function loginWithEmail(email, password) {
-  try {
-    const cred = await firebaseAuth.signInWithEmailAndPassword(email, password);
-    return { ok: true, user: cred.user };
-  } catch(e) {
-    return { ok: false, error: firebaseErrorMsg(e.code) };
-  }
-}
-
-async function registerWithEmail(email, password, nome, cognome) {
-  try {
-    const cred = await firebaseAuth.createUserWithEmailAndPassword(email, password);
-    await cred.user.updateProfile({ displayName: `${nome} ${cognome}` });
-    // Profilo creato da onAuthStateChanged
-    return { ok: true, user: cred.user };
-  } catch(e) {
-    return { ok: false, error: firebaseErrorMsg(e.code) };
-  }
-}
-
 async function loginWithGoogle() {
   try {
     const cred = await firebaseAuth.signInWithPopup(googleProvider);
+    if (!isEmailAdminPermanente(cred.user.email) && !isEmailDominioScuola(cred.user.email)) {
+      await firebaseAuth.signOut();
+      return { ok: false, error: `Puoi accedere solo con un'email istituzionale @${DOMINIO_EMAIL_SCUOLA}.` };
+    }
     return { ok: true, user: cred.user };
   } catch(e) {
     if (e.code === 'auth/popup-closed-by-user') return { ok: false, error: null };
@@ -2393,37 +2224,12 @@ async function logout() {
   DB.libri = []; DB.utenti = []; DB.prenotazioni = []; DB.segnalazioni = [];
 }
 
-async function resetPassword(email) {
-  try {
-    await firebaseAuth.sendPasswordResetEmail(email);
-    return { ok: true };
-  } catch(e) {
-    return { ok: false, error: firebaseErrorMsg(e.code) };
-  }
-}
-
 // ── ADMIN ─────────────────────────────────────────────────────
-function promoteToAdmin(codice) {
-  if (!AUTH.user) return { ok: false, error: 'Devi essere loggato.' };
-  if (codice.trim() !== ADMIN_SECRET_CODE) return { ok: false, error: 'Codice non corretto.' };
-
-  const adminUids = JSON.parse(localStorage.getItem('mercatino_admin_uids') || '[]');
-  if (!adminUids.includes(AUTH.user.uid)) {
-    adminUids.push(AUTH.user.uid);
-    localStorage.setItem('mercatino_admin_uids', JSON.stringify(adminUids));
-  }
-  if (AUTH.profile) AUTH.profile.ruolo = 'admin';
-  if (SESSION.utenteCorrente) SESSION.utenteCorrente.ruolo = 'admin';
-  fsUpsertUtente(AUTH.user.uid, { ruolo: 'admin' });
-
-  AUTH.listeners.forEach(fn => fn(AUTH.user));
-  return { ok: true };
-}
-
-function revokeAdmin(uid) {
-  const adminUids = JSON.parse(localStorage.getItem('mercatino_admin_uids') || '[]');
-  localStorage.setItem('mercatino_admin_uids', JSON.stringify(adminUids.filter(id => id !== uid)));
-}
+// Non esiste più un codice segreto lato client per diventare admin:
+// era visibile a chiunque aprisse il codice sorgente della pagina
+// (view-source), quindi rappresentava un rischio di sicurezza reale.
+// L'unico modo per ottenere i privilegi admin ora è avere la propria
+// email nella whitelist ADMIN_EMAILS, verificata ad ogni login.
 
 function isCurrentUserAdmin() {
   return AUTH.profile?.ruolo === 'admin';
@@ -2468,6 +2274,36 @@ function authInit() {
 'use strict';
 
 // ── ROUTER ──────────────────────────────────────────────────
+// Elenco standard usato solo per il campo "classe" del profilo personale
+// (identità dello studente), indipendente dalle classi/sezioni gestite
+// dall'admin per i libri di testo.
+const PROFILO_CLASSI_STANDARD = [
+  "1A","1B","1C","1D","2A","2B","2C","2D","3A","3B","3C","3D",
+  "4A","4B","4C","4D","5A","5B","5C","5D"
+];
+
+// Orari selezionabili per l'incontro a scuola: 07:00–17:00 ogni 30 minuti
+const ORARI_INCONTRO = (function() {
+  const slots = [];
+  for (let h = 7; h <= 17; h++) {
+    slots.push(String(h).padStart(2, '0') + ':00');
+    if (h < 17) slots.push(String(h).padStart(2, '0') + ':30');
+  }
+  return slots;
+})();
+
+// Problematiche selezionabili nella richiesta di assistenza. Solo scelta
+// da menu a tendina: lo studente non scrive alcun testo libero.
+const TIPI_SEGNALAZIONE = [
+  { value: 'annuncio_errato',          label: 'Annuncio con dati errati' },
+  { value: 'isbn_errato',              label: 'ISBN non corretto' },
+  { value: 'contenuto_inappropriato',  label: 'Contenuto inappropriato' },
+  { value: 'problema_prenotazione',    label: 'Problema con una prenotazione' },
+  { value: 'problema_account',         label: 'Problema con il mio account' },
+  { value: 'problema_tecnico',         label: 'Problema tecnico del sito' },
+  { value: 'altro',                    label: 'Altro' }
+];
+
 let currentView = 'home';
 let currentLibroId = null;
 let bookingLibroId = null;
@@ -2558,6 +2394,7 @@ function buildBookCard(libro) {
   const seller = getUtenteById(libro.venditore_id);
   const sellerName = seller ? seller.nome : 'Studente';
   const isDisabled = libro.stato_annuncio !== 'disponibile';
+  const classeLabel = libro.classe_sezione || (libro.classe ? libro.classe + 'ª' : '');
 
   return `
     <article class="card book-card" onclick="navigate('dettaglio','${libro.id}')" tabindex="0" role="button"
@@ -2570,7 +2407,7 @@ function buildBookCard(libro) {
         <p class="book-title">${escHtml(libro.titolo)}</p>
         <p class="book-author">${escHtml(libro.autore)}</p>
         <div class="book-meta">
-          <span>Cl. ${escHtml(libro.classe)}ª</span>
+          <span>Cl. ${escHtml(classeLabel)}</span>
           <span>${escHtml(libro.materia)}</span>
           ${badgeStato(libro.stato_libro)}
         </div>
@@ -2615,23 +2452,31 @@ function animateCounter(id, target) {
 let filteredBooks = [];
 
 function renderCatalogo() {
-  filteredBooks = [...DB.libri];
+  popolaFilterClasse();
+  filteredBooks = DB.libri.filter(l => l.stato_annuncio !== 'annullato');
   renderBooksGrid(filteredBooks);
+}
+
+function popolaFilterClasse() {
+  const sel = document.getElementById('filter-classe');
+  if (!sel) return;
+  const current = sel.value;
+  sel.innerHTML = '<option value="">Tutte le classi</option>' +
+    getClassiSezioniLabels().map(cs => `<option value="${escHtml(cs)}" ${cs === current ? 'selected' : ''}>${escHtml(cs)}</option>`).join('');
 }
 
 function filterBooks() {
   const q = (document.getElementById('search-input')?.value || '').toLowerCase().trim();
   const classe = document.getElementById('filter-classe')?.value || '';
-  const indirizzo = document.getElementById('filter-indirizzo')?.value || '';
   const materia = document.getElementById('filter-materia')?.value || '';
   const stato = document.getElementById('filter-stato')?.value || '';
   const disponibilita = document.getElementById('filter-disponibilita')?.value || '';
   const prezzoMax = parseFloat(document.getElementById('filter-prezzo-max')?.value) || Infinity;
 
   filteredBooks = DB.libri.filter(libro => {
+    if (libro.stato_annuncio === 'annullato') return false; // rimosso: mai in catalogo
     if (q && !`${libro.titolo} ${libro.autore} ${libro.isbn} ${libro.editore}`.toLowerCase().includes(q)) return false;
-    if (classe && libro.classe !== classe) return false;
-    if (indirizzo && libro.indirizzo !== indirizzo) return false;
+    if (classe && (libro.classe_sezione || '') !== classe) return false;
     if (materia && libro.materia !== materia) return false;
     if (stato && libro.stato_libro !== stato) return false;
     if (disponibilita && libro.stato_annuncio !== disponibilita) return false;
@@ -2662,7 +2507,7 @@ function renderBooksGrid(libri) {
 }
 
 function resetFilters() {
-  ['search-input','filter-classe','filter-indirizzo','filter-materia','filter-stato','filter-disponibilita','filter-prezzo-max'].forEach(id => {
+  ['search-input','filter-classe','filter-materia','filter-stato','filter-disponibilita','filter-prezzo-max'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
@@ -2680,6 +2525,11 @@ function toggleFilters() {
 function renderDettaglio(libroId) {
   const libro = getLibroById(libroId);
   if (!libro) { navigate('catalogo'); return; }
+  if (libro.stato_annuncio === 'annullato') {
+    showToast('Questo annuncio non è più disponibile.', 'default');
+    navigate('catalogo');
+    return;
+  }
 
   document.getElementById('detail-titolo').textContent = libro.titolo;
   document.getElementById('breadcrumb-titolo').textContent = libro.titolo.length > 40 ? libro.titolo.slice(0,40) + '…' : libro.titolo;
@@ -2687,6 +2537,7 @@ function renderDettaglio(libroId) {
   const seller = getUtenteById(libro.venditore_id);
   const sellerName = seller ? seller.nome : 'Studente';
   const isAvailable = libro.stato_annuncio === 'disponibile';
+  const classeLabel = libro.classe_sezione || (libro.classe ? libro.classe + 'ª' : '—');
 
   let ctaHtml = '';
   if (isAvailable) {
@@ -2712,8 +2563,9 @@ function renderDettaglio(libroId) {
       <table class="book-info-table" aria-label="Informazioni libro">
         <tbody>
           <tr><th scope="row">Materia</th><td>${escHtml(libro.materia)}</td></tr>
-          <tr><th scope="row">Classe</th><td>${escHtml(libro.classe)}ª ${escHtml(libro.indirizzo)}</td></tr>
+          <tr><th scope="row">Classe</th><td>${escHtml(classeLabel)}</td></tr>
           <tr><th scope="row">Autore</th><td>${escHtml(libro.autore)}</td></tr>
+          <tr><th scope="row">Volume</th><td>${escHtml(libro.volume || '—')}</td></tr>
           <tr><th scope="row">Editore</th><td>${escHtml(libro.editore)}</td></tr>
           <tr><th scope="row">ISBN</th><td><code style="font-size:.85rem">${escHtml(libro.isbn)}</code></td></tr>
           <tr><th scope="row">Stato</th><td>${statoLibroLabel(libro.stato_libro)}</td></tr>
@@ -2722,12 +2574,6 @@ function renderDettaglio(libroId) {
           <tr><th scope="row">Data annuncio</th><td>${formatDate(libro.created_at)}</td></tr>
         </tbody>
       </table>
-
-      ${libro.descrizione ? `
-        <div>
-          <h3 style="font-size:.9rem;color:var(--grigio-500);text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem">Descrizione del venditore</h3>
-          <p style="font-size:.93rem;color:var(--grigio-700);line-height:1.65">${escHtml(libro.descrizione)}</p>
-        </div>` : ''}
 
       <div class="payment-notice" role="note">
         <span class="payment-notice-icon" aria-hidden="true">🤝</span>
@@ -2802,6 +2648,24 @@ function renderPrenotazione() {
     const today = new Date(); today.setDate(today.getDate() + 1);
     const minDate = today.toISOString().split('T')[0];
 
+    // Solo gli orari e le date autorizzati dal venditore; per annunci
+    // pubblicati prima di questa funzione, si ripiega su valori liberi.
+    const orariVenditore = (libro.orari_disponibili && libro.orari_disponibili.length > 0)
+      ? libro.orari_disponibili
+      : ORARI_INCONTRO;
+    const orarioProposto = orariVenditore[0];
+    const orariOptions = orariVenditore.map(o =>
+      `<option value="${o}" ${o === orarioProposto ? 'selected' : ''}>${o}</option>`).join('');
+
+    const dateVenditore = (libro.date_disponibili && libro.date_disponibili.length > 0)
+      ? libro.date_disponibili : null;
+    const campoData = dateVenditore
+      ? `<select class="form-control" id="booking-data" required aria-required="true">
+           ${dateVenditore.map((d, i) => `<option value="${d}" ${i === 0 ? 'selected' : ''}>${formatDateBreve(d)}</option>`).join('')}
+         </select>
+         <p class="form-hint">Data proposta dal venditore — puoi scegliere solo tra quelle che ha reso disponibili</p>`
+      : `<input type="date" class="form-control" id="booking-data" min="${minDate}" required aria-required="true" />`;
+
     stepContent = `
       <form onsubmit="bookingSubmitStep2(event)" novalidate>
         <div class="form-group">
@@ -2814,19 +2678,15 @@ function renderPrenotazione() {
         </div>
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label" for="booking-data">Data preferita<span class="required" aria-label="obbligatorio">*</span></label>
-            <input type="date" class="form-control" id="booking-data" min="${minDate}" required aria-required="true" />
+            <label class="form-label" for="booking-data">Data<span class="required" aria-label="obbligatorio">*</span></label>
+            ${campoData}
           </div>
           <div class="form-group">
-            <label class="form-label" for="booking-ora">Orario preferito<span class="required" aria-label="obbligatorio">*</span></label>
+            <label class="form-label" for="booking-ora">Orario<span class="required" aria-label="obbligatorio">*</span></label>
             <select class="form-control" id="booking-ora" required aria-required="true">
-              <option value="">Seleziona orario</option>
-              <option value="07:50">07:50 — Prima dell'inizio delle lezioni</option>
-              <option value="10:15">10:15 — Intervallo</option>
-              <option value="12:30">12:30 — Fine mattina</option>
-              <option value="13:00">13:00 — Uscita</option>
-              <option value="13:30">13:30 — Dopo uscita</option>
+              ${orariOptions}
             </select>
+            <p class="form-hint">Orario proposto dal venditore — puoi scegliere solo tra quelli che ha reso disponibili</p>
           </div>
         </div>
         <div class="form-group">
@@ -2962,6 +2822,8 @@ function renderVenditore() {
     }
     return;
   }
+  popolaSelectClasseSezioneVendita();
+  resetFormVendita();
   renderMieiAnnunci();
   renderPrenotazioniRicevute();
 }
@@ -2982,7 +2844,9 @@ function renderMieiAnnunci() {
     return;
   }
 
-  container.innerHTML = miei.map(libro => `
+  container.innerHTML = miei.map(libro => {
+    const classeLabel = libro.classe_sezione || (libro.classe ? libro.classe + 'ª' : '');
+    return `
     <div class="listing-item" role="article" aria-label="${escHtml(libro.titolo)}">
       <div>
         <div style="display:flex;gap:.75rem;align-items:flex-start;margin-bottom:.75rem;flex-wrap:wrap">
@@ -2992,7 +2856,7 @@ function renderMieiAnnunci() {
             <div style="display:flex;gap:.5rem;flex-wrap:wrap">
               ${badgeAnnuncio(libro.stato_annuncio)}
               ${badgeStato(libro.stato_libro)}
-              <span style="font-size:.83rem;color:var(--grigio-500)">Cl. ${libro.classe}ª ${libro.indirizzo}</span>
+              <span style="font-size:.83rem;color:var(--grigio-500)">Cl. ${escHtml(classeLabel)}</span>
             </div>
           </div>
         </div>
@@ -3004,16 +2868,39 @@ function renderMieiAnnunci() {
         <span style="font-size:1.1rem;font-weight:700;color:var(--blu)">${formatPrice(libro.prezzo)}</span>
         <button class="btn btn-outline btn-sm" onclick="navigate('dettaglio','${libro.id}')">Visualizza</button>
         ${libro.stato_annuncio === 'disponibile' ? `<button class="btn btn-danger btn-sm" onclick="markAsSold('${libro.id}')">Segna venduto</button>` : ''}
+        ${libro.stato_annuncio !== 'annullato' ? `<button class="btn btn-ghost btn-sm" style="color:var(--rosso);border-color:var(--rosso-chiaro)" onclick="venditoreRimuoviAnnuncio('${libro.id}')">Rimuovi annuncio</button>` : ''}
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
-function markAsSold(libroId) {
-  const libro = getLibroById(libroId);
+function venditoreRimuoviAnnuncio(id) {
+  const libro = getLibroById(id);
   if (!libro) return;
-  libro.stato_annuncio = 'venduto';
-  renderMieiAnnunci();
-  showToast('Libro segnato come venduto/scambiato', 'success');
+  openModal(`
+    <div class="modal-header">
+      <h3>Rimuovi annuncio</h3>
+      <button class="modal-close" onclick="closeModal()" aria-label="Chiudi">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Stai per rimuovere l'annuncio: <strong>${escHtml(libro.titolo)}</strong></p>
+      <p style="margin-top:.5rem;color:var(--grigio-500);font-size:.88rem">Non sarà più visibile nel catalogo. L'operazione non è reversibile dal sito.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Annulla</button>
+      <button class="btn btn-danger" onclick="doVenditoreRimuoviAnnuncio('${id}')">Rimuovi annuncio</button>
+    </div>`);
+}
+
+async function doVenditoreRimuoviAnnuncio(id) {
+  try {
+    await fsDeleteLibro(id);
+    closeModal();
+    renderMieiAnnunci();
+    showToast('Annuncio rimosso dal catalogo', 'default');
+  } catch(err) {
+    showToast('Errore: ' + err.message, 'error');
+  }
 }
 
 function renderPrenotazioniRicevute() {
@@ -3091,81 +2978,176 @@ function cancelBooking(prenotazioneId, ruolo) {
     </div>`);
 }
 
-function doCancelBooking(prenotazioneId, ruolo) {
-  const p = getPrenotazioneById(prenotazioneId);
-  if (!p) return;
-  p.stato_prenotazione = 'annullato';
-  const libro = getLibroById(p.libro_id);
-  if (libro) libro.stato_annuncio = 'disponibile';
-  closeModal();
-  if (ruolo === 'venditore') renderPrenotazioniRicevute();
-  else renderAcquirente();
-  showToast('Prenotazione annullata', 'default');
-}
-
 function markExchangeDone(prenotazioneId, ruolo) {
-  const p = getPrenotazioneById(prenotazioneId);
-  if (!p) return;
+  // sovrascritto in app-patch.js
+}
 
-  if (ruolo === 'venditore') p.conferma_venditore = true;
-  else p.conferma_acquirente = true;
+function resetFormVendita() {
+  libroSelezionatoVendita = null;
+  venditaDateSelezionate = [];
+  const sel = document.getElementById('vendita-classe-sezione');
+  if (sel) sel.value = '';
+  const lista = document.getElementById('vendita-lista-testi');
+  if (lista) lista.innerHTML = '';
+  const finale = document.getElementById('vendita-form-finale');
+  if (finale) { finale.style.display = 'none'; finale.innerHTML = ''; }
+}
 
-  if (p.conferma_venditore && p.conferma_acquirente) {
-    p.stato_prenotazione = 'scambio_completato';
-    const libro = getLibroById(p.libro_id);
-    if (libro) libro.stato_annuncio = 'venduto';
-    showToast('🎉 Scambio completato! Grazie per aver usato il mercatino.', 'success', 5000);
-  } else {
-    showToast('Conferma registrata. In attesa dell\'altra parte.', 'success');
+function popolaSelectClasseSezioneVendita() {
+  const sel = document.getElementById('vendita-classe-sezione');
+  if (!sel) return;
+  const labels = getClassiSezioniLabels();
+  sel.innerHTML = '<option value="">Seleziona classe e sezione</option>' +
+    labels.map(cs => `<option value="${escHtml(cs)}">${escHtml(cs)}</option>`).join('');
+
+  const alertEl = document.getElementById('vendita-intro-alert');
+  if (alertEl) {
+    alertEl.innerHTML = labels.length === 0
+      ? `<span class="alert-icon" aria-hidden="true">⚠️</span><p>Nessuna classe è ancora stata configurata dall'amministratore. Torna più tardi oppure contatta la segreteria.</p>`
+      : `<span class="alert-icon" aria-hidden="true">ℹ️</span><p>Seleziona la tua classe e sezione: comparirà l'elenco dei libri di testo adottati. Scegli il libro che vuoi vendere, indica le condizioni e il prezzo.</p>`;
+    alertEl.className = labels.length === 0 ? 'alert alert-warning' : 'alert alert-info';
   }
-
-  if (ruolo === 'venditore') renderPrenotazioniRicevute();
-  else renderAcquirente();
 }
 
-function resetFormAnnuncio() {
-  document.getElementById('form-nuovo-annuncio')?.reset();
-}
+let libroSelezionatoVendita = null;
+let venditaDateSelezionate = [];
 
-function submitNuovoAnnuncio(e) {
-  e.preventDefault();
-  const form = e.target;
-  const titolo = document.getElementById('form-titolo').value.trim();
-  const autore = document.getElementById('form-autore').value.trim();
-  const materia = document.getElementById('form-materia').value;
-  const classe = document.getElementById('form-classe').value;
-  const statoLibro = document.getElementById('form-stato-libro').value;
-  const prezzo = parseFloat(document.getElementById('form-prezzo').value);
+function onClasseSezioneChangeVendita() {
+  libroSelezionatoVendita = null;
+  const finale = document.getElementById('vendita-form-finale');
+  if (finale) { finale.style.display = 'none'; finale.innerHTML = ''; }
+  const cs = document.getElementById('vendita-classe-sezione').value;
+  const container = document.getElementById('vendita-lista-testi');
+  if (!container) return;
+  if (!cs) { container.innerHTML = ''; return; }
 
-  if (!titolo || !autore || !materia || !classe || !statoLibro || isNaN(prezzo)) {
-    showToast('Compila tutti i campi obbligatori (*)', 'error');
+  const testi = getTestiPerClasseSezione(cs);
+  if (testi.length === 0) {
+    container.innerHTML = `<div class="alert alert-warning"><span class="alert-icon">⚠️</span><p>Nessun libro trovato per la classe ${escHtml(cs)}.</p></div>`;
     return;
   }
 
-  const newId = 'l' + (DB.libri.length + 1);
-  DB.libri.push({
-    id: newId,
-    titolo,
-    autore,
-    isbn: document.getElementById('form-isbn').value.trim() || '—',
-    editore: document.getElementById('form-editore').value.trim() || '—',
-    materia,
-    classe,
-    indirizzo: document.getElementById('form-indirizzo').value || '',
-    prezzo,
-    stato_libro: statoLibro,
-    descrizione: document.getElementById('form-descrizione').value.trim(),
-    immagine: null,
-    venditore_id: SESSION.utenteCorrente.id,
-    stato_annuncio: 'disponibile',
-    created_at: new Date().toISOString().split('T')[0]
-  });
+  container.innerHTML = `
+    <h3 style="margin:1.25rem 0 .75rem;color:var(--grigio-700);font-size:1rem;text-transform:uppercase;letter-spacing:.05em">Libri adottati — ${escHtml(cs)}</h3>
+    <div class="admin-table-wrap">
+      <table class="admin-table" aria-label="Libri di testo classe ${escHtml(cs)}">
+        <thead><tr><th>Materia</th><th>Titolo</th><th>Vol.</th><th>Autore</th><th>Editore</th><th>ISBN</th><th></th></tr></thead>
+        <tbody>
+          ${testi.map((t, i) => `
+            <tr>
+              <td>${escHtml(t.materia)}</td>
+              <td><strong>${escHtml(t.titolo)}</strong></td>
+              <td>${escHtml(t.volume)}</td>
+              <td>${escHtml(t.autore)}</td>
+              <td>${escHtml(t.editore)}</td>
+              <td><code style="font-size:.8rem">${escHtml(t.isbn)}</code></td>
+              <td><button type="button" class="btn btn-primary btn-sm" onclick="selezionaLibroVendita('${cs}',${i})">Vendi</button></td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
 
-  form.reset();
-  showToast('Annuncio pubblicato con successo!', 'success', 5000);
+function selezionaLibroVendita(cs, idx) {
+  const testi = getTestiPerClasseSezione(cs);
+  const libro = testi[idx];
+  if (!libro) return;
+  libroSelezionatoVendita = { ...libro, classe_sezione: cs };
+  venditaDateSelezionate = [];
 
-  // Passa alla tab "i miei annunci"
-  setTimeout(() => switchTab('venditore', 'miei-annunci'), 800);
+  const area = document.getElementById('vendita-form-finale');
+  if (!area) return;
+  area.style.display = 'block';
+  area.innerHTML = `
+    <div class="card card-body" style="margin-top:1.5rem;border:2px solid var(--blu-chiaro)">
+      <h3 style="margin-bottom:.75rem;font-size:1rem;color:var(--grigio-500)">Libro selezionato</h3>
+      <p style="font-weight:700;color:var(--grigio-900)">${escHtml(libro.titolo)} — ${escHtml(libro.volume)}</p>
+      <p style="font-size:.85rem;color:var(--grigio-500);margin-bottom:1.25rem">${escHtml(libro.autore)} · ${escHtml(libro.editore)} · ISBN ${escHtml(libro.isbn)}</p>
+
+      <form onsubmit="submitVenditaLibro(event)" novalidate>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="vendita-stato">Condizioni del libro<span class="required" aria-label="obbligatorio">*</span></label>
+            <select class="form-control" id="vendita-stato" required aria-required="true">
+              <option value="">Seleziona stato</option>
+              <option value="ottimo">Ottimo — praticamente nuovo</option>
+              <option value="buono">Buono — poche sottolineature</option>
+              <option value="discreto">Discreto — uso evidente, leggibile</option>
+              <option value="usurato">Usurato — molte annotazioni/usura</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="vendita-prezzo">Prezzo richiesto (€)<span class="required" aria-label="obbligatorio">*</span></label>
+            <input type="number" class="form-control" id="vendita-prezzo" placeholder="es. 12.00" min="0" step="0.50" required aria-required="true" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="vendita-nuova-data">Date disponibili per l'incontro<span class="required" aria-label="obbligatorio">*</span></label>
+          <p class="form-hint" style="margin-top:-.2rem;margin-bottom:.6rem">Aggiungi uno o più giorni in cui sei disponibile a scuola. L'acquirente potrà scegliere solo tra questi.</p>
+          <div style="display:flex;gap:.5rem;margin-bottom:.6rem;flex-wrap:wrap">
+            <input type="date" class="form-control" id="vendita-nuova-data" style="max-width:200px" min="${(function(){ const d=new Date(); d.setDate(d.getDate()+1); return d.toISOString().split('T')[0]; })()}" />
+            <button type="button" class="btn btn-outline btn-sm" onclick="aggiungiDataVendita()">+ Aggiungi data</button>
+          </div>
+          <div id="vendita-date-selezionate" style="display:flex;flex-wrap:wrap;gap:.4rem"></div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">Orario disponibile per l'incontro<span class="required" aria-label="obbligatorio">*</span></label>
+          <p class="form-hint" style="margin-top:-.2rem;margin-bottom:.6rem">Seleziona uno o più orari in cui sei disponibile a scuola per lo scambio (07:00–17:00). L'acquirente potrà scegliere solo tra questi.</p>
+          <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(70px,1fr));gap:.4rem" role="group" aria-label="Orari disponibili per l'incontro">
+            ${ORARI_INCONTRO.map(o => `
+              <label style="display:flex;align-items:center;gap:.35rem;font-size:.85rem;background:var(--grigio-100);border:1px solid var(--grigio-200);border-radius:var(--r-sm);padding:.4rem .5rem;cursor:pointer">
+                <input type="checkbox" class="vendita-orario-checkbox" value="${o}" style="margin:0" />${o}
+              </label>`).join('')}
+          </div>
+        </div>
+
+        <div style="display:flex;gap:1rem;flex-wrap:wrap">
+          <button type="submit" class="btn btn-primary btn-lg">📤 Pubblica annuncio</button>
+          <button type="button" class="btn btn-ghost" onclick="annullaSelezioneVendita()">↺ Scegli un altro libro</button>
+        </div>
+      </form>
+    </div>`;
+  renderChipDateVendita();
+  area.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function annullaSelezioneVendita() {
+  libroSelezionatoVendita = null;
+  venditaDateSelezionate = [];
+  const area = document.getElementById('vendita-form-finale');
+  if (area) { area.style.display = 'none'; area.innerHTML = ''; }
+}
+
+function aggiungiDataVendita() {
+  const input = document.getElementById('vendita-nuova-data');
+  if (!input || !input.value) { showToast('Seleziona prima una data', 'error'); return; }
+  if (!venditaDateSelezionate.includes(input.value)) {
+    venditaDateSelezionate.push(input.value);
+    venditaDateSelezionate.sort();
+  }
+  input.value = '';
+  renderChipDateVendita();
+}
+
+function rimuoviDataVendita(data) {
+  venditaDateSelezionate = venditaDateSelezionate.filter(d => d !== data);
+  renderChipDateVendita();
+}
+
+function renderChipDateVendita() {
+  const container = document.getElementById('vendita-date-selezionate');
+  if (!container) return;
+  if (venditaDateSelezionate.length === 0) {
+    container.innerHTML = `<span style="font-size:.83rem;color:var(--grigio-500)">Nessuna data aggiunta ancora</span>`;
+    return;
+  }
+  container.innerHTML = venditaDateSelezionate.map(d => `
+    <span class="badge badge-prenotato" style="gap:.4rem;text-transform:none;letter-spacing:normal">
+      ${formatDateBreve(d)}
+      <button type="button" onclick="rimuoviDataVendita('${d}')" style="background:none;border:none;color:inherit;cursor:pointer;font-size:.9rem;line-height:1;padding:0" aria-label="Rimuovi questa data">✕</button>
+    </span>`).join('');
 }
 
 // ── ACQUIRENTE ────────────────────────────────────────────────
@@ -3229,8 +3211,7 @@ function buildAuthGuardHtml(title, subtitle) {
     <h2>${escHtml(title)}</h2>
     <p>${escHtml(subtitle)}</p>
     <div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap">
-      <button class="btn btn-primary btn-lg" onclick="navigate('login')">🔑 Accedi</button>
-      <button class="btn btn-outline" onclick="switchAuthTab('register');navigate('login')">✏️ Registrati</button>
+      <button class="btn btn-primary btn-lg" onclick="navigate('login')">🔑 Accedi con Google</button>
     </div>
   </div>`;
 }
@@ -3258,6 +3239,7 @@ function renderAdmin() {
     });
 
   renderAdminAnnunci();
+  renderAdminClassi();
   renderAdminPrenotazioni();
   renderAdminSegnalazioni();
   renderAdminUtenti();
@@ -3277,11 +3259,13 @@ function renderAdminAnnunci() {
           <th>Titolo</th><th>Materia</th><th>Cl.</th><th>Prezzo</th><th>Stato libro</th><th>Stato annuncio</th><th>Azioni</th>
         </tr></thead>
         <tbody>
-          ${DB.libri.map(l => `
+          ${DB.libri.map(l => {
+            const classeLabel = l.classe_sezione || (l.classe ? l.classe + 'ª' : '');
+            return `
             <tr>
               <td><strong>${escHtml(l.titolo.slice(0,35))}${l.titolo.length>35?'…':''}</strong><br><small style="color:var(--grigio-500)">${escHtml(l.autore.slice(0,30))}</small></td>
               <td>${escHtml(l.materia)}</td>
-              <td>${l.classe}ª</td>
+              <td>${escHtml(classeLabel)}</td>
               <td>${formatPrice(l.prezzo)}</td>
               <td>${badgeStato(l.stato_libro)}</td>
               <td>${badgeAnnuncio(l.stato_annuncio)}</td>
@@ -3289,7 +3273,8 @@ function renderAdminAnnunci() {
                 <button class="btn btn-ghost btn-sm" onclick="navigate('dettaglio','${l.id}')">Vedi</button>
                 ${l.stato_annuncio !== 'annullato' ? `<button class="btn btn-danger btn-sm" onclick="adminRemoveBook('${l.id}')" style="margin-left:.3rem">Rimuovi</button>` : '<span style="font-size:.78rem;color:var(--grigio-500)">Rimosso</span>'}
               </td>
-            </tr>`).join('')}
+            </tr>`;
+          }).join('')}
         </tbody>
       </table>
     </div>`;
@@ -3313,12 +3298,391 @@ function adminRemoveBook(id) {
     </div>`);
 }
 
-function doAdminRemoveBook(id) {
-  const libro = getLibroById(id);
-  if (libro) libro.stato_annuncio = 'annullato';
-  closeModal();
-  renderAdmin();
-  showToast('Annuncio rimosso dal catalogo', 'default');
+// ── ADMIN: CLASSI E SEZIONI + CARICAMENTO LIBRI DA EXCEL ─────────
+let excelParsedBooks = [];
+
+function renderAdminClassi() {
+  const el = document.getElementById('admin-classi-content');
+  if (!el) return;
+
+  const classi = DB.classi_sezioni.slice().sort((a, b) => (a.label || a.id).localeCompare(b.label || b.id));
+  const conteggioPerClasse = {};
+  DB.libri_testo.forEach(t => { conteggioPerClasse[t.classe_sezione] = (conteggioPerClasse[t.classe_sezione] || 0) + 1; });
+
+  el.innerHTML = `
+    <div class="card card-body" style="margin-bottom:1.5rem">
+      <h3 style="margin-bottom:1rem;font-size:1rem;color:var(--grigio-700)">Classi e sezioni</h3>
+      <form onsubmit="adminAggiungiClasseSezione(event)" style="display:flex;gap:.75rem;flex-wrap:wrap;align-items:flex-end;margin-bottom:1.25rem">
+        <div class="form-group" style="margin-bottom:0;flex:1;min-width:160px">
+          <label class="form-label" for="admin-nuova-classe">Nuova classe e sezione</label>
+          <input type="text" class="form-control" id="admin-nuova-classe" placeholder="es. 3A" maxlength="10" />
+        </div>
+        <button type="submit" class="btn btn-primary">+ Aggiungi</button>
+      </form>
+      ${classi.length === 0 ? `
+        <div class="alert alert-warning"><span class="alert-icon" aria-hidden="true">⚠️</span><p>Nessuna classe configurata. Aggiungine una per poter caricare i libri di testo e permettere agli studenti di vendere.</p></div>` : `
+        <div style="display:flex;flex-wrap:wrap;gap:.5rem">
+          ${classi.map(c => {
+            const label = c.label || c.id;
+            const n = conteggioPerClasse[label] || 0;
+            return `<span class="seller-badge" style="gap:.6rem">
+              <strong>${escHtml(label)}</strong>
+              <span style="color:var(--grigio-500)">${n} libr${n === 1 ? 'o' : 'i'}</span>
+              <button type="button" onclick="adminRimuoviClasseSezione('${escHtml(label)}')" style="background:none;border:none;color:var(--rosso);cursor:pointer;font-size:.9rem;line-height:1" aria-label="Rimuovi classe ${escHtml(label)}">✕</button>
+            </span>`;
+          }).join('')}
+        </div>`}
+    </div>
+
+    <div class="card card-body">
+      <h3 style="margin-bottom:.5rem;font-size:1rem;color:var(--grigio-700)">Carica libri di testo da Excel o PDF</h3>
+      <p style="font-size:.86rem;color:var(--grigio-500);margin-bottom:1.25rem">Excel: la prima riga deve avere le intestazioni <strong>Materia, Autore, Titolo, Volume, Editore, ISBN</strong>. PDF: va bene l'elenco libri standard della scuola (con colonne Materia/Autori/Titolo/Volume/Editore/Codice ISBN) — le colonne vengono riconosciute automaticamente. Il caricamento sostituisce l'elenco già presente per la classe selezionata.</p>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="admin-excel-classe">Classe e sezione di destinazione<span class="required" aria-label="obbligatorio">*</span></label>
+          <select class="form-control" id="admin-excel-classe" ${classi.length === 0 ? 'disabled' : ''} aria-required="true">
+            <option value="">Seleziona classe</option>
+            ${classi.map(c => { const label = c.label || c.id; return `<option value="${escHtml(label)}">${escHtml(label)}</option>`; }).join('')}
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="admin-excel-file">File Excel (.xlsx) o PDF</label>
+          <input type="file" class="form-control" id="admin-excel-file" accept=".xlsx,.xls,.pdf" onchange="handleLibriFile(event)" ${classi.length === 0 ? 'disabled' : ''} />
+        </div>
+      </div>
+
+      <button type="button" class="btn btn-ghost btn-sm" onclick="scaricaModelloExcel()" style="margin-bottom:1rem" ${classi.length === 0 ? 'disabled' : ''}>⬇️ Scarica modello Excel</button>
+
+      <div id="admin-excel-preview"></div>
+    </div>`;
+}
+
+async function adminAggiungiClasseSezione(e) {
+  e.preventDefault();
+  const input = document.getElementById('admin-nuova-classe');
+  const label = (input.value || '').trim().toUpperCase();
+  if (!label) { showToast('Inserisci un nome classe', 'error'); return; }
+  if (DB.classi_sezioni.some(c => (c.label || c.id) === label)) { showToast('Questa classe esiste già', 'error'); return; }
+
+  try {
+    await fsAddClasseSezione(label);
+    input.value = '';
+    showToast(`Classe ${label} aggiunta`, 'success');
+    renderAdminClassi();
+    popolaSelectClasseSezioneVendita();
+  } catch(err) {
+    showToast('Errore: ' + err.message, 'error');
+  }
+}
+
+function adminRimuoviClasseSezione(label) {
+  const n = DB.libri_testo.filter(t => t.classe_sezione === label).length;
+  openModal(`
+    <div class="modal-header">
+      <h3>Rimuovi classe ${escHtml(label)}</h3>
+      <button class="modal-close" onclick="closeModal()" aria-label="Chiudi">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Stai per rimuovere la classe <strong>${escHtml(label)}</strong> dall'elenco.</p>
+      ${n > 0 ? `<div class="alert alert-warning" style="margin-top:1rem"><span class="alert-icon" aria-hidden="true">⚠️</span><p>Sono presenti ${n} libri di testo associati a questa classe. Non saranno eliminati, ma la classe non sarà più selezionabile per nuovi annunci finché non la aggiungi di nuovo.</p></div>` : ''}
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Annulla</button>
+      <button class="btn btn-danger" onclick="doAdminRimuoviClasseSezione('${escHtml(label)}')">Rimuovi</button>
+    </div>`);
+}
+
+async function doAdminRimuoviClasseSezione(label) {
+  try {
+    await fsDeleteClasseSezione(label);
+    closeModal();
+    showToast(`Classe ${label} rimossa`, 'default');
+    renderAdminClassi();
+    popolaSelectClasseSezioneVendita();
+  } catch(err) {
+    showToast('Errore: ' + err.message, 'error');
+  }
+}
+
+function scaricaModelloExcel() {
+  if (typeof XLSX === 'undefined') { showToast('Libreria Excel non disponibile', 'error'); return; }
+  const wsData = [
+    ['Materia', 'Autore', 'Titolo', 'Volume', 'Editore', 'ISBN'],
+    ['Matematica', 'Bergamini, Barozzi, Trifone', 'Matematica.blu 2.0', 'Vol. 1', 'Zanichelli', '9788808720801']
+  ];
+  const ws = XLSX.utils.aoa_to_sheet(wsData);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Libri');
+  XLSX.writeFile(wb, 'modello_libri_di_testo.xlsx');
+}
+
+let ultimaSorgenteImportLibri = '';
+
+// Instrada il file scelto al parser corretto in base all'estensione
+function handleLibriFile(e) {
+  const file = e.target.files[0];
+  const preview = document.getElementById('admin-excel-preview');
+  excelParsedBooks = [];
+  if (!file) { if (preview) preview.innerHTML = ''; return; }
+
+  const nomeFile = file.name.toLowerCase();
+  if (nomeFile.endsWith('.pdf')) {
+    parsePdfLibri(file);
+  } else if (nomeFile.endsWith('.xlsx') || nomeFile.endsWith('.xls')) {
+    parseExcelLibri(file);
+  } else {
+    if (preview) preview.innerHTML = `<div class="alert alert-danger"><span class="alert-icon" aria-hidden="true">❌</span><p>Formato non riconosciuto. Carica un file .xlsx o .pdf.</p></div>`;
+  }
+}
+
+function parseExcelLibri(file) {
+  const preview = document.getElementById('admin-excel-preview');
+  if (typeof XLSX === 'undefined') { showToast('Libreria Excel non disponibile', 'error'); return; }
+
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    try {
+      const data = new Uint8Array(evt.target.result);
+      const wb = XLSX.read(data, { type: 'array' });
+      const sheet = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(sheet, { defval: '' });
+
+      const leggiCampo = (row, chiaviPossibili) => {
+        for (const k of Object.keys(row)) {
+          if (chiaviPossibili.includes(k.trim().toLowerCase())) return String(row[k]).trim();
+        }
+        return '';
+      };
+
+      excelParsedBooks = rows.map(row => ({
+        materia: leggiCampo(row, ['materia']),
+        autore:  leggiCampo(row, ['autore']),
+        titolo:  leggiCampo(row, ['titolo']),
+        volume:  leggiCampo(row, ['volume', 'vol']),
+        editore: leggiCampo(row, ['editore']),
+        isbn:    leggiCampo(row, ['isbn'])
+      })).filter(b => b.titolo);
+
+      renderAnteprimaLibriImportati('Excel');
+    } catch(err) {
+      preview.innerHTML = `<div class="alert alert-danger"><span class="alert-icon" aria-hidden="true">❌</span><p>Errore nella lettura del file: ${escHtml(err.message)}</p></div>`;
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+// ── LETTURA PDF (elenco libri di testo) ──────────────────────────
+// Riconosce automaticamente le colonne dalla riga di intestazione
+// della tabella (Materia / Autori / Titolo / Volume / Editore /
+// Codice ISBN / Prezzo / Nuova adoz.) e gestisce più tabelle nello
+// stesso PDF (es. "Libri da acquistare", "In comodato", "Consigliati")
+// e nomi autore che vanno a capo su più righe.
+async function parsePdfLibri(file) {
+  const preview = document.getElementById('admin-excel-preview');
+  preview.innerHTML = `<div class="alert alert-info"><span class="alert-icon" aria-hidden="true">⏳</span><p>Lettura del PDF in corso…</p></div>`;
+
+  if (typeof pdfjsLib === 'undefined') {
+    preview.innerHTML = `<div class="alert alert-danger"><span class="alert-icon" aria-hidden="true">❌</span><p>Libreria di lettura PDF non disponibile.</p></div>`;
+    return;
+  }
+
+  try {
+    const buffer = await file.arrayBuffer();
+    const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
+    const righe = [];
+
+    for (let p = 1; p <= pdf.numPages; p++) {
+      const page = await pdf.getPage(p);
+      const content = await page.getTextContent();
+
+      const righePerY = new Map();
+      content.items.forEach(item => {
+        const y = Math.round(item.transform[5]);
+        const x = item.transform[4];
+        if (!item.str || !item.str.trim()) return;
+        if (!righePerY.has(y)) righePerY.set(y, []);
+        righePerY.get(y).push({ x, str: item.str });
+      });
+
+      Array.from(righePerY.keys())
+        .sort((a, b) => b - a) // dall'alto verso il basso della pagina
+        .forEach(y => {
+          const elementi = righePerY.get(y).sort((a, b) => a.x - b.x);
+          righe.push(elementi);
+        });
+    }
+
+    excelParsedBooks = estraiLibriDaRighePdf(righe);
+    renderAnteprimaLibriImportati('PDF');
+  } catch(err) {
+    preview.innerHTML = `<div class="alert alert-danger"><span class="alert-icon" aria-hidden="true">❌</span><p>Errore nella lettura del PDF: ${escHtml(err.message)}</p></div>`;
+  }
+}
+
+function estraiLibriDaRighePdf(righe) {
+  const DEFINIZIONE_COLONNE = [
+    { key: 'materia',   match: ['materia'] },
+    { key: 'autore',    match: ['autori', 'autore'] },
+    { key: 'titolo',    match: ['titolo'] },
+    { key: 'volume',    match: ['volume'] },
+    { key: 'editore',   match: ['editore'] },
+    { key: 'isbn',      match: ['codice isbn', 'isbn', 'codice'] },
+    { key: '_prezzo',   match: ['prezzo'] },
+    { key: '_nuovaadoz', match: ['nuova adoz', 'nuova'] }
+  ];
+  const CAMPI_LIBRO = ['materia', 'autore', 'titolo', 'volume', 'editore', 'isbn'];
+
+  let confiniColonne = null;
+  let corrente = null;
+  const libri = [];
+
+  function nuovoAccumulatore() {
+    return { materia: '', autore: '', titolo: '', volume: '', editore: '', isbn: '', _prezzo: '', _nuovaadoz: '' };
+  }
+
+  function chiudiRigaCorrente() {
+    if (corrente && (corrente.titolo.trim() || corrente.materia.trim())) {
+      const libro = {};
+      CAMPI_LIBRO.forEach(k => { libro[k] = corrente[k].replace(/\s+/g, ' ').trim(); });
+      libri.push(libro);
+    }
+    corrente = null;
+  }
+
+  righe.forEach(elementi => {
+    const testoRiga = elementi.map(el => el.str).join(' ').trim();
+    if (!testoRiga) return;
+    const testoLower = testoRiga.toLowerCase();
+
+    // Riga di intestazione tabella → ridefinisce le colonne
+    if (testoLower.includes('materia') && (testoLower.includes('titolo') || testoLower.includes('autori'))) {
+      chiudiRigaCorrente();
+      confiniColonne = [];
+      elementi.forEach(el => {
+        const s = el.str.trim().toLowerCase();
+        DEFINIZIONE_COLONNE.forEach(col => {
+          if (col.match.some(m => s.includes(m)) && !confiniColonne.find(c => c.key === col.key)) {
+            confiniColonne.push({ key: col.key, x: el.x });
+          }
+        });
+      });
+      confiniColonne.sort((a, b) => a.x - b.x);
+      return;
+    }
+
+    // Righe di testo non tabellari da ignorare (note, titoli sezione, piè di pagina)
+    if (/^pagina\s+\d+/i.test(testoRiga)) return;
+    if (/^(elenco libri|corso\s*:|classi\s|libri da acquistare|libri in comodato|libri consigliati)/i.test(testoRiga)) {
+      chiudiRigaCorrente();
+      return;
+    }
+    if (testoRiga.startsWith('*') || /per quanto riguarda|modalità di consegna|attendere ad acquistare/i.test(testoLower)) {
+      return;
+    }
+
+    if (!confiniColonne || confiniColonne.length === 0) return; // non ancora dentro una tabella riconosciuta
+
+    // Assegna ogni frammento di testo alla colonna più vicina
+    const cella = nuovoAccumulatore();
+    elementi.forEach(el => {
+      let colonnaScelta = confiniColonne[0];
+      confiniColonne.forEach(c => { if (el.x >= c.x - 5) colonnaScelta = c; });
+      cella[colonnaScelta.key] += (cella[colonnaScelta.key] ? ' ' : '') + el.str;
+    });
+
+    if (!corrente) corrente = nuovoAccumulatore();
+    Object.keys(cella).forEach(k => {
+      if (cella[k]) corrente[k] += (corrente[k] ? ' ' : '') + cella[k];
+    });
+
+    // Un codice ISBN/adozione valido su questa riga chiude il libro corrente
+    const isbnPulito = cella.isbn.replace(/\s+/g, '');
+    if (/^\d{8,13}$/.test(isbnPulito) || /^[A-Z]{2,}\d+$/i.test(isbnPulito)) {
+      chiudiRigaCorrente();
+    }
+  });
+  chiudiRigaCorrente();
+
+  return libri;
+}
+
+// ── ANTEPRIMA MODIFICABILE (Excel e PDF) ──────────────────────────
+function renderAnteprimaLibriImportati(sorgente) {
+  ultimaSorgenteImportLibri = sorgente;
+  const preview = document.getElementById('admin-excel-preview');
+  if (!preview) return;
+
+  if (excelParsedBooks.length === 0) {
+    preview.innerHTML = `<div class="alert alert-danger"><span class="alert-icon" aria-hidden="true">❌</span><p>Nessun libro riconosciuto nel file ${escHtml(sorgente)}. ${sorgente === 'PDF' ? 'Controlla che il PDF contenga una tabella con colonne Materia/Autori/Titolo/Editore/ISBN, oppure usa il modello Excel.' : 'Controlla che le intestazioni delle colonne siano corrette (Materia, Autore, Titolo, Volume, Editore, ISBN).'}</p></div>`;
+    return;
+  }
+
+  preview.innerHTML = `
+    <div class="alert alert-success" style="margin-top:1rem"><span class="alert-icon" aria-hidden="true">✅</span><p>${excelParsedBooks.length} libri riconosciuti da ${escHtml(sorgente)}. Controlla e correggi l'anteprima se serve, poi conferma.</p></div>
+    ${sorgente === 'PDF' ? `<div class="alert alert-warning"><span class="alert-icon" aria-hidden="true">⚠️</span><p>La lettura da PDF è automatica e può contenere piccole imprecisioni (es. nomi molto lunghi andati a capo). Ogni cella qui sotto è modificabile: correggi prima di confermare.</p></div>` : ''}
+    <div class="admin-table-wrap" style="margin-bottom:1rem">
+      <table class="admin-table">
+        <thead><tr><th>Materia</th><th>Titolo</th><th>Vol.</th><th>Autore</th><th>Editore</th><th>ISBN</th><th></th></tr></thead>
+        <tbody>
+          ${excelParsedBooks.map((b, i) => `
+            <tr>
+              <td><input class="form-control" style="font-size:.82rem;padding:.35rem .5rem;min-width:120px" value="${escHtml(b.materia)}" oninput="aggiornaLibroImportato(${i},'materia',this.value)" /></td>
+              <td><input class="form-control" style="font-size:.82rem;padding:.35rem .5rem;min-width:180px" value="${escHtml(b.titolo)}" oninput="aggiornaLibroImportato(${i},'titolo',this.value)" /></td>
+              <td><input class="form-control" style="font-size:.82rem;padding:.35rem .5rem;width:60px" value="${escHtml(b.volume)}" oninput="aggiornaLibroImportato(${i},'volume',this.value)" /></td>
+              <td><input class="form-control" style="font-size:.82rem;padding:.35rem .5rem;min-width:160px" value="${escHtml(b.autore)}" oninput="aggiornaLibroImportato(${i},'autore',this.value)" /></td>
+              <td><input class="form-control" style="font-size:.82rem;padding:.35rem .5rem;min-width:120px" value="${escHtml(b.editore)}" oninput="aggiornaLibroImportato(${i},'editore',this.value)" /></td>
+              <td><input class="form-control" style="font-size:.82rem;padding:.35rem .5rem;min-width:130px" value="${escHtml(b.isbn)}" oninput="aggiornaLibroImportato(${i},'isbn',this.value)" /></td>
+              <td><button type="button" onclick="rimuoviLibroImportato(${i})" style="background:none;border:none;color:var(--rosso);cursor:pointer;font-size:1rem" aria-label="Rimuovi questa riga">✕</button></td>
+            </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+    <button type="button" class="btn btn-success" onclick="confermaCaricamentoExcel()">📥 Conferma caricamento (${excelParsedBooks.length} libri)</button>`;
+}
+
+function aggiornaLibroImportato(indice, campo, valore) {
+  if (excelParsedBooks[indice]) excelParsedBooks[indice][campo] = valore;
+}
+
+function rimuoviLibroImportato(indice) {
+  excelParsedBooks.splice(indice, 1);
+  renderAnteprimaLibriImportati(ultimaSorgenteImportLibri);
+}
+
+function confermaCaricamentoExcel() {
+  const classeTarget = document.getElementById('admin-excel-classe').value;
+  if (!classeTarget) { showToast('Seleziona la classe di destinazione', 'error'); return; }
+  if (excelParsedBooks.length === 0) { showToast('Nessun libro da caricare', 'error'); return; }
+
+  const esistenti = DB.libri_testo.filter(t => t.classe_sezione === classeTarget).length;
+  openModal(`
+    <div class="modal-header">
+      <h3>Conferma caricamento</h3>
+      <button class="modal-close" onclick="closeModal()" aria-label="Chiudi">✕</button>
+    </div>
+    <div class="modal-body">
+      <p>Stai per caricare <strong>${excelParsedBooks.length}</strong> libri per la classe <strong>${escHtml(classeTarget)}</strong>.</p>
+      ${esistenti > 0 ? `<div class="alert alert-warning" style="margin-top:1rem"><span class="alert-icon" aria-hidden="true">⚠️</span><p>Questo sostituirà i ${esistenti} libri già presenti per questa classe.</p></div>` : ''}
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal()">Annulla</button>
+      <button class="btn btn-primary" onclick="doConfermaCaricamentoExcel('${escHtml(classeTarget)}')">Conferma</button>
+    </div>`);
+}
+
+async function doConfermaCaricamentoExcel(classeTarget) {
+  try {
+    await fsReplaceLibriTestoPerSezione(classeTarget, excelParsedBooks);
+    closeModal();
+    excelParsedBooks = [];
+    const fileInput = document.getElementById('admin-excel-file');
+    if (fileInput) fileInput.value = '';
+    showToast('Libri caricati con successo!', 'success', 5000);
+    renderAdminClassi();
+  } catch(err) {
+    showToast('Errore nel caricamento: ' + err.message, 'error');
+  }
 }
 
 function renderAdminPrenotazioni() {
@@ -3352,36 +3716,36 @@ function renderAdminPrenotazioni() {
 function renderAdminSegnalazioni() {
   const el = document.getElementById('admin-segnalazioni-table');
   if (!el) return;
-  const tipoLabel = { annuncio_errato: 'Annuncio errato', isbn_errato: 'ISBN errato', contenuto_inappropriato: 'Contenuto inappropriato', problema_tecnico: 'Problema tecnico', altro: 'Altro' };
+  const tipoLabel = {};
+  TIPI_SEGNALAZIONE.forEach(t => { tipoLabel[t.value] = t.label; });
   const statoLabel = { aperta: 'Aperta', in_lavorazione: 'In lavorazione', risolta: 'Risolta' };
 
   el.innerHTML = `
-    <div style="margin-bottom:1rem"><h3 style="font-size:1rem">Segnalazioni (${DB.segnalazioni.length})</h3></div>
+    <div style="margin-bottom:1rem"><h3 style="font-size:1rem">Richieste di assistenza (${DB.segnalazioni.length})</h3></div>
     <div class="admin-table-wrap">
       <table class="admin-table">
-        <thead><tr><th>Tipo</th><th>Messaggio</th><th>Stato</th><th>Data</th><th>Azioni</th></tr></thead>
+        <thead><tr><th>Studente</th><th>Email</th><th>Problematica</th><th>Stato</th><th>Data e ora</th><th>Azioni</th></tr></thead>
         <tbody>
-          ${DB.segnalazioni.map(s => `
+          ${DB.segnalazioni.map(s => {
+            const dataOra = s.creato_il ? formatDateTime(s.creato_il) : (s.created_at || '—');
+            const mittente = s.segnalante_nome || (getUtenteById(s.segnalante_id) ? `${getUtenteById(s.segnalante_id).nome} ${getUtenteById(s.segnalante_id).cognome || ''}`.trim() : '—');
+            const email = s.segnalante_email || (getUtenteById(s.segnalante_id)?.email || '—');
+            return `
             <tr>
-              <td>${tipoLabel[s.tipo] || s.tipo}</td>
-              <td style="max-width:260px">${escHtml(s.messaggio.slice(0,80))}${s.messaggio.length>80?'…':''}</td>
+              <td>${escHtml(mittente)}</td>
+              <td style="font-size:.82rem">${escHtml(email)}</td>
+              <td>${tipoLabel[s.tipo] || s.tipo || s.messaggio || '—'}</td>
               <td><span class="badge ${s.stato==='risolta'?'badge-disponibile':s.stato==='in_lavorazione'?'badge-prenotato':'badge-annullato'}">${statoLabel[s.stato]||s.stato}</span></td>
-              <td>${s.created_at}</td>
+              <td style="font-size:.82rem">${dataOra}</td>
               <td>
-                ${s.stato !== 'risolta' ? `<button class="btn btn-success btn-sm" onclick="adminResolveSegnalazione('${s.id}')">Risolvi</button>` : '—'}
+                ${s.stato === 'aperta' ? `<button class="btn btn-ghost btn-sm" onclick="adminImpostaStatoSegnalazione('${s.id}','in_lavorazione')">In lavorazione</button>` : ''}
+                ${s.stato !== 'risolta' ? `<button class="btn btn-success btn-sm" onclick="adminImpostaStatoSegnalazione('${s.id}','risolta')" style="margin-top:.3rem">Risolvi</button>` : '—'}
               </td>
-            </tr>`).join('')}
+            </tr>`;
+          }).join('')}
         </tbody>
       </table>
     </div>`;
-}
-
-function adminResolveSegnalazione(id) {
-  const s = DB.segnalazioni.find(x => x.id === id);
-  if (s) s.stato = 'risolta';
-  renderAdminSegnalazioni();
-  renderAdmin();
-  showToast('Segnalazione marcata come risolta', 'success');
 }
 
 function renderAdminUtenti() {
@@ -3442,14 +3806,34 @@ function switchTab(area, tabName) {
 
 // ── ASSISTENZA ─────────────────────────────────────────────────
 function renderAssistenza() {
+  const formCard = document.getElementById('assistenza-form-card');
+  if (formCard) {
+    if (!AUTH.user) {
+      formCard.innerHTML = buildAuthGuardHtml('Accedi per richiedere assistenza', 'Per inviare una richiesta devi essere registrato, così l\'admin sa chi sei.');
+    } else {
+      formCard.innerHTML = `
+        <h3 style="margin-bottom:1rem">📢 Richiedi assistenza</h3>
+        <form id="form-segnalazione" onsubmit="submitSegnalazione(event)" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="seg-tipo">Che problema hai riscontrato?<span class="required" aria-label="obbligatorio">*</span></label>
+            <select class="form-control" id="seg-tipo" required aria-required="true">
+              <option value="">Seleziona una problematica</option>
+              ${TIPI_SEGNALAZIONE.map(t => `<option value="${t.value}">${escHtml(t.label)}</option>`).join('')}
+            </select>
+          </div>
+          <button type="submit" class="btn btn-primary btn-full">Invia richiesta</button>
+        </form>`;
+    }
+  }
+
   const faqs = [
+    { q: "Come faccio a pubblicare un libro in vendita?", a: "Vai in 'Vendi', seleziona la tua classe e sezione: comparirà l'elenco dei libri adottati. Scegli il libro, indica le condizioni e il prezzo." },
     { q: "Come faccio a prenotare un libro?", a: "Vai al catalogo, trova il libro che ti interessa e clicca su 'Dettaglio'. Poi clicca su 'Prenota questo libro' e segui i passi." },
     { q: "Il pagamento avviene online?", a: "No. Il pagamento avviene sempre di presenza, al momento dello scambio a scuola. La piattaforma non gestisce pagamenti." },
     { q: "Dove avviene lo scambio?", a: "Lo scambio avviene sempre all'interno della scuola, nei luoghi indicati durante la prenotazione (atrio, biblioteca, corridoi, ecc.)." },
     { q: "Posso annullare una prenotazione?", a: "Sì, puoi annullare dall'area 'Le mie prenotazioni'. Ti chiediamo di farlo almeno 24 ore prima dell'appuntamento." },
     { q: "Come faccio a sapere se il venditore ha confermato?", a: "Controlla la sezione 'Le mie prenotazioni'. Lo stato passerà da 'In attesa' ad 'Appuntamento confermato'." },
-    { q: "Il libro non corrisponde alla descrizione. Cosa faccio?", a: "Puoi rifiutare il libro al momento dello scambio e segnalare l'annuncio tramite la sezione Assistenza." },
-    { q: "Come viene verificato l'ISBN?", a: "Al momento l'ISBN è a titolo informativo. Ti consigliamo di verificarlo sul retro del libro prima di completare lo scambio." }
+    { q: "Il libro non corrisponde alle condizioni indicate. Cosa faccio?", a: "Puoi rifiutare il libro al momento dello scambio e segnalare l'annuncio tramite la sezione Assistenza." }
   ];
 
   const container = document.getElementById('faq-list');
@@ -3475,27 +3859,6 @@ function toggleFaq(i) {
   answer.style.display = isOpen ? 'none' : 'block';
   icon.style.transform = isOpen ? '' : 'rotate(180deg)';
   btn.setAttribute('aria-expanded', !isOpen);
-}
-
-function submitSegnalazione(e) {
-  e.preventDefault();
-  const tipo = document.getElementById('seg-tipo').value;
-  const msg = document.getElementById('seg-messaggio').value.trim();
-  if (!tipo || !msg) { showToast('Compila tipo e descrizione', 'error'); return; }
-
-  const newId = 's' + (DB.segnalazioni.length + 1);
-  DB.segnalazioni.push({
-    id: newId,
-    tipo,
-    libro_id: document.getElementById('seg-libro').value || null,
-    segnalante_id: SESSION.utenteCorrente.id,
-    messaggio: msg,
-    stato: 'aperta',
-    created_at: new Date().toISOString().split('T')[0]
-  });
-
-  e.target.reset();
-  showToast('Segnalazione inviata! Risponderemo entro 2 giorni lavorativi.', 'success', 5000);
 }
 
 // ══════════════════════════════════════════════════════════════
@@ -3594,15 +3957,6 @@ async function doLogout() {
 }
 
 // ── LOGIN FORM ────────────────────────────────────────────────
-function switchAuthTab(tab) {
-  const isLogin = tab === 'login';
-  document.getElementById('form-login').style.display    = isLogin ? 'block' : 'none';
-  document.getElementById('form-register').style.display = isLogin ? 'none' : 'block';
-  document.getElementById('auth-tab-login').classList.toggle('active', isLogin);
-  document.getElementById('auth-tab-register').classList.toggle('active', !isLogin);
-  clearAuthError();
-}
-
 function showAuthError(msg) {
   const el = document.getElementById('auth-error');
   const msgEl = document.getElementById('auth-error-msg');
@@ -3631,73 +3985,6 @@ function hideAuthLoading() {
   if (ov) ov.style.display = 'none';
 }
 
-async function submitLogin(e) {
-  e.preventDefault();
-  clearAuthError();
-  const email    = document.getElementById('login-email').value.trim();
-  const password = document.getElementById('login-password').value;
-  if (!email || !password) { showAuthError('Inserisci email e password.'); return; }
-
-  const btn = document.getElementById('btn-login-submit');
-  btn.disabled = true; btn.textContent = 'Accesso in corso…';
-  showAuthLoading('Verifica credenziali…');
-
-  const result = await loginWithEmail(email, password);
-  hideAuthLoading();
-  btn.disabled = false; btn.textContent = 'Accedi al tuo account';
-
-  if (!result.ok) { showAuthError(result.error); return; }
-
-  showToast(`Bentornato, ${AUTH.profile?.nome || 'Utente'}! 👋`, 'success', 4000);
-
-  // Se c'era una navigazione in attesa, eseguila; altrimenti vai al profilo
-  if (pendingNavigation) {
-    const fn = pendingNavigation;
-    pendingNavigation = null;
-    fn();
-  } else {
-    navigate('profilo');
-  }
-}
-
-async function submitRegister(e) {
-  e.preventDefault();
-  clearAuthError();
-  const nome     = document.getElementById('reg-nome').value.trim();
-  const cognome  = document.getElementById('reg-cognome').value.trim();
-  const email    = document.getElementById('reg-email').value.trim();
-  const password = document.getElementById('reg-password').value;
-  const privacy  = document.getElementById('reg-privacy').checked;
-
-  if (!nome || !cognome || !email || !password) { showAuthError('Compila tutti i campi obbligatori.'); return; }
-  if (password.length < 6) { showAuthError('La password deve essere di almeno 6 caratteri.'); return; }
-  if (!privacy) { showAuthError('Devi accettare il Regolamento e la Privacy per procedere.'); return; }
-
-  const btn = document.getElementById('btn-register-submit');
-  btn.disabled = true; btn.textContent = 'Creazione account…';
-  showAuthLoading('Creazione account in corso…');
-
-  const result = await registerWithEmail(email, password, nome, cognome);
-
-  // Aggiorna classe e indirizzo se forniti
-  if (result.ok && AUTH.profile) {
-    const classe    = document.getElementById('reg-classe').value;
-    const indirizzo = document.getElementById('reg-indirizzo').value;
-    if (classe)    AUTH.profile.classe    = SESSION.utenteCorrente.classe    = classe;
-    if (indirizzo) AUTH.profile.indirizzo = SESSION.utenteCorrente.indirizzo = indirizzo;
-    const dbUser = DB.utenti.find(u => u.id === AUTH.profile.uid);
-    if (dbUser) { dbUser.classe = classe; dbUser.indirizzo = indirizzo; }
-  }
-
-  hideAuthLoading();
-  btn.disabled = false; btn.textContent = 'Crea account';
-
-  if (!result.ok) { showAuthError(result.error); return; }
-
-  showToast(`Benvenuto, ${nome}! Account creato con successo 🎉`, 'success', 5000);
-  navigate('profilo');
-}
-
 async function submitGoogle() {
   clearAuthError();
   showAuthLoading('Connessione con Google…');
@@ -3715,73 +4002,6 @@ async function submitGoogle() {
   } else {
     navigate('profilo');
   }
-}
-
-function showResetPassword() {
-  openModal(`
-    <div class="modal-header">
-      <h3>Recupero password</h3>
-      <button class="modal-close" onclick="closeModal()" aria-label="Chiudi">✕</button>
-    </div>
-    <div class="modal-body">
-      <p style="color:var(--grigio-700);font-size:.9rem;margin-bottom:1.25rem">Inserisci la tua email. Ti invieremo un link per reimpostare la password.</p>
-      <div class="form-group">
-        <label class="form-label" for="reset-email">Email</label>
-        <input type="email" class="form-control" id="reset-email" placeholder="la-tua@email.it" autocomplete="email" />
-      </div>
-      <div id="reset-feedback" style="display:none"></div>
-    </div>
-    <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="closeModal()">Annulla</button>
-      <button class="btn btn-primary" onclick="doResetPassword()">Invia link</button>
-    </div>`);
-}
-
-async function doResetPassword() {
-  const email = document.getElementById('reset-email')?.value.trim();
-  if (!email) return;
-  const result = await resetPassword(email);
-  const fb = document.getElementById('reset-feedback');
-  if (fb) {
-    fb.style.display = 'block';
-    fb.innerHTML = result.ok
-      ? `<div class="alert alert-success"><span class="alert-icon">✅</span><p>Email inviata! Controlla la tua casella di posta.</p></div>`
-      : `<div class="alert alert-danger"><span class="alert-icon">❌</span><p>${escHtml(result.error)}</p></div>`;
-  }
-  if (result.ok) setTimeout(closeModal, 2500);
-}
-
-// ── PASSWORD VISIBILITY + STRENGTH ──────────────────────────
-function togglePasswordVisibility(inputId, btnId) {
-  const input = document.getElementById(inputId);
-  const btn   = document.getElementById(btnId);
-  if (!input) return;
-  const isVisible = input.type === 'text';
-  input.type = isVisible ? 'password' : 'text';
-  if (btn) btn.textContent = isVisible ? '👁' : '🙈';
-}
-
-document.addEventListener('input', function(e) {
-  if (e.target.id === 'reg-password') {
-    checkPasswordStrength(e.target.value);
-  }
-});
-
-function checkPasswordStrength(pwd) {
-  const hint = document.getElementById('password-strength-hint');
-  if (!hint) return;
-  let strength = 0;
-  if (pwd.length >= 6)  strength++;
-  if (pwd.length >= 10) strength++;
-  if (/[A-Z]/.test(pwd)) strength++;
-  if (/[0-9]/.test(pwd) || /[^a-zA-Z0-9]/.test(pwd)) strength++;
-  const labels = ['', 'Debole', 'Discreta', 'Buona', 'Ottima'];
-  const classes = ['', 'ps-weak', 'ps-medium', 'ps-strong', 'ps-very-strong'];
-  hint.innerHTML = strength === 0 ? '' : `
-    <div class="password-strength ${classes[strength]}">
-      <span></span><span></span><span></span><span></span>
-    </div>
-    <span style="font-size:.75rem;color:var(--grigio-500)">Sicurezza: ${labels[strength]}</span>`;
 }
 
 // ── VIEW: PROFILO PERSONALE ───────────────────────────────────
@@ -3880,7 +4100,7 @@ function renderProfilo() {
                 <label class="form-label" for="edit-classe">Classe</label>
                 <select class="form-control" id="edit-classe">
                   <option value="">Non specificata</option>
-                  ${['1A','1B','1C','2A','2B','2C','3A','3B','3C','4A','4B','4C','5A','5B','5C'].map(c =>
+                  ${PROFILO_CLASSI_STANDARD.map(c =>
                     `<option ${c === p.classe ? 'selected' : ''}>${c}</option>`).join('')}
                 </select>
               </div>
@@ -3913,18 +4133,21 @@ function renderProfilo() {
               <button class="btn btn-primary btn-sm" onclick="requireAuth(()=>navigate('venditore'))">+ Pubblica annuncio</button>
             </div>` :
             `<div style="display:flex;flex-direction:column;gap:.75rem">
-              ${miei.map(libro => `
+              ${miei.map(libro => {
+                const classeLabel = libro.classe_sezione || (libro.classe ? libro.classe + 'ª' : '');
+                return `
                 <div style="display:flex;gap:1rem;align-items:center;padding:.75rem;background:var(--grigio-100);border-radius:var(--r-md);border:1px solid var(--grigio-200)">
                   <div style="width:40px;height:52px;background:var(--blu-chiaro);border-radius:var(--r-sm);display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0" aria-hidden="true">📖</div>
                   <div style="flex:1;min-width:0">
                     <div style="font-weight:600;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${escHtml(libro.titolo)}</div>
-                    <div style="font-size:.78rem;color:var(--grigio-500)">${escHtml(libro.materia)} · Cl. ${libro.classe}ª · ${formatPrice(libro.prezzo)}</div>
+                    <div style="font-size:.78rem;color:var(--grigio-500)">${escHtml(libro.materia)} · Cl. ${escHtml(classeLabel)} · ${formatPrice(libro.prezzo)}</div>
                   </div>
                   <div style="display:flex;gap:.4rem;align-items:center;flex-shrink:0">
                     ${badgeAnnuncio(libro.stato_annuncio)}
                     <button class="btn btn-ghost btn-sm" onclick="navigate('dettaglio','${libro.id}')">Vedi</button>
                   </div>
-                </div>`).join('')}
+                </div>`;
+              }).join('')}
             </div>
             <div style="margin-top:1rem">
               <button class="btn btn-outline btn-sm" onclick="requireAuth(()=>{ navigate('venditore'); setTimeout(()=>switchTab('venditore','miei-annunci'),100); })">Gestisci tutti →</button>
@@ -3961,33 +4184,6 @@ function renderProfilo() {
     </div>`;
 }
 
-function saveProfileEdit(e) {
-  e.preventDefault();
-  if (!AUTH.profile) return;
-  const nome     = document.getElementById('edit-nome').value.trim();
-  const cognome  = document.getElementById('edit-cognome').value.trim();
-  const classe   = document.getElementById('edit-classe').value;
-  const indirizzo = document.getElementById('edit-indirizzo').value;
-
-  AUTH.profile.nome      = nome      || AUTH.profile.nome;
-  AUTH.profile.cognome   = cognome;
-  AUTH.profile.classe    = classe;
-  AUTH.profile.indirizzo = indirizzo;
-
-  SESSION.utenteCorrente.nome      = AUTH.profile.nome;
-  SESSION.utenteCorrente.cognome   = AUTH.profile.cognome;
-  SESSION.utenteCorrente.classe    = AUTH.profile.classe;
-  SESSION.utenteCorrente.indirizzo = AUTH.profile.indirizzo;
-
-  // Aggiorna nel DB demo
-  const dbUser = DB.utenti.find(u => u.id === AUTH.profile.uid);
-  if (dbUser) { dbUser.nome = AUTH.profile.nome; dbUser.cognome = AUTH.profile.cognome; dbUser.classe = classe; dbUser.indirizzo = indirizzo; }
-
-  updateNavAuth(AUTH.user);
-  renderProfilo();
-  showToast('Profilo aggiornato!', 'success');
-}
-
 // ── NAVIGATE — SPA ROUTER COMPLETO ────────────────────────────
 function navigate(viewId, param) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -4007,142 +4203,9 @@ function navigate(viewId, param) {
   if (viewId === 'venditore')   renderVenditore();
   if (viewId === 'acquirente')  renderAcquirente();
   if (viewId === 'admin')       renderAdmin();
-  if (viewId === 'admin-setup') renderAdminSetup();
   if (viewId === 'assistenza')  renderAssistenza();
   if (viewId === 'profilo')     renderProfilo();
   if (viewId === 'login')       renderLoginView();
-}
-
-// ── ADMIN SETUP ────────────────────────────────────────────────
-
-function renderAdminSetup() {
-  const formArea    = document.getElementById('admin-setup-form-area');
-  const alreadyDiv  = document.getElementById('admin-setup-already');
-  const notLoggedDiv= document.getElementById('admin-setup-not-logged');
-  const userInfo    = document.getElementById('admin-setup-user-info');
-  const emailEl     = document.getElementById('admin-setup-email');
-  const ruoloEl     = document.getElementById('admin-setup-ruolo-attuale');
-  const msgEl       = document.getElementById('admin-setup-msg');
-  const inputEl     = document.getElementById('admin-secret-input');
-
-  // Reset stato
-  if (msgEl) { msgEl.style.display = 'none'; msgEl.textContent = ''; }
-  if (inputEl) inputEl.value = '';
-
-  if (!AUTH.ready) {
-    // Auth non ancora pronta: riprova tra 300ms
-    setTimeout(renderAdminSetup, 300);
-    return;
-  }
-
-  if (!AUTH.user) {
-    // Non loggato
-    if (formArea)    formArea.style.display    = 'none';
-    if (alreadyDiv)  alreadyDiv.style.display  = 'none';
-    if (notLoggedDiv)notLoggedDiv.style.display = 'block';
-    if (userInfo)    userInfo.style.display    = 'none';
-    return;
-  }
-
-  // Loggato — mostra info utente
-  if (userInfo)  userInfo.style.display  = 'block';
-  if (emailEl)   emailEl.textContent     = AUTH.user.email || AUTH.profile?.nome || 'Utente';
-  const isAdmin = AUTH.profile?.ruolo === 'admin';
-  if (ruoloEl)   ruoloEl.textContent     = isAdmin ? '✅ Ruolo attuale: Amministratore' : 'Ruolo attuale: Studente';
-
-  if (isAdmin) {
-    // Già admin
-    if (formArea)    formArea.style.display    = 'none';
-    if (alreadyDiv)  alreadyDiv.style.display  = 'block';
-    if (notLoggedDiv)notLoggedDiv.style.display = 'none';
-  } else {
-    // Non ancora admin — mostra form
-    if (formArea)    formArea.style.display    = 'block';
-    if (alreadyDiv)  alreadyDiv.style.display  = 'none';
-    if (notLoggedDiv)notLoggedDiv.style.display = 'none';
-  }
-}
-
-function clearAdminSetupMsg() {
-  const msgEl = document.getElementById('admin-setup-msg');
-  if (msgEl) { msgEl.style.display = 'none'; msgEl.textContent = ''; }
-  const inputEl = document.getElementById('admin-secret-input');
-  if (inputEl) {
-    inputEl.style.borderColor = '';
-  }
-}
-
-function toggleAdminSecretVisibility() {
-  const input  = document.getElementById('admin-secret-input');
-  const toggle = document.getElementById('admin-secret-toggle');
-  if (!input) return;
-  if (input.type === 'password') {
-    input.type = 'text';
-    if (toggle) toggle.textContent = '🙈';
-  } else {
-    input.type = 'password';
-    if (toggle) toggle.textContent = '👁';
-  }
-}
-
-function submitAdminSetup() {
-  const inputEl = document.getElementById('admin-secret-input');
-  const msgEl   = document.getElementById('admin-setup-msg');
-  const btnEl   = document.getElementById('admin-setup-btn');
-  const code    = inputEl ? inputEl.value.trim() : '';
-
-  if (!code) {
-    _adminSetupShowMsg('⚠️ Inserisci il codice segreto.', 'warn');
-    if (inputEl) inputEl.style.borderColor = 'var(--arancio, #f59e0b)';
-    return;
-  }
-
-  // Disabilita bottone durante il processo
-  if (btnEl) { btnEl.disabled = true; btnEl.textContent = '⏳ Verifica in corso…'; }
-
-  const result = promoteToAdmin(code);
-
-  setTimeout(function () {
-    if (btnEl) { btnEl.disabled = false; btnEl.textContent = '🔑 Attiva privilegi admin'; }
-
-    if (result.ok) {
-      _adminSetupShowMsg('✅ Privilegi admin attivati! Reindirizzamento…', 'success');
-      if (inputEl) inputEl.style.borderColor = 'var(--verde)';
-      showToast('🎉 Sei ora amministratore!', 'success');
-      setTimeout(function () {
-        renderAdminSetup(); // Aggiorna la vista (mostra pannello "già admin")
-      }, 1200);
-    } else {
-      _adminSetupShowMsg('❌ ' + (result.error || 'Codice non valido.'), 'error');
-      if (inputEl) {
-        inputEl.style.borderColor = 'var(--rosso)';
-        inputEl.value = '';
-        inputEl.focus();
-      }
-    }
-  }, 400);
-}
-
-function _adminSetupShowMsg(text, type) {
-  const msgEl = document.getElementById('admin-setup-msg');
-  if (!msgEl) return;
-  const colors = {
-    success: { bg: '#d1fae5', color: '#065f46', border: '#6ee7b7' },
-    error:   { bg: '#fee2e2', color: '#991b1b', border: '#fca5a5' },
-    warn:    { bg: '#fef3c7', color: '#92400e', border: '#fcd34d' }
-  };
-  const c = colors[type] || colors.warn;
-  msgEl.style.cssText = `display:block;background:${c.bg};color:${c.color};border:1px solid ${c.border};border-radius:8px;padding:.65rem 1rem;font-size:.88rem;margin-bottom:1rem`;
-  msgEl.textContent = text;
-}
-
-function confirmRevokeAdmin() {
-  if (!confirm('Sei sicuro di voler rimuovere i tuoi privilegi admin?\nDovrai reinserire il codice segreto per riacquisirli.')) return;
-  if (AUTH.user) {
-    revokeAdmin(AUTH.user.uid);
-    showToast('Privilegi admin rimossi.', 'info');
-    renderAdminSetup();
-  }
 }
 
 // ── LOGIN VIEW ─────────────────────────────────────────────────
@@ -4150,9 +4213,9 @@ function confirmRevokeAdmin() {
 function renderLoginView() {
   // Se l'utente è già loggato, vai al profilo
   if (AUTH.user) { navigate('profilo'); return; }
-  // Reset form
   clearAuthError();
-  switchAuthTab('login');
+  const hint = document.getElementById('login-dominio-hint');
+  if (hint) hint.textContent = `@${DOMINIO_EMAIL_SCUOLA}`;
 }
 
 // ── INIT AGGIORNATO ────────────────────────────────────────────
@@ -4160,9 +4223,21 @@ document.addEventListener('DOMContentLoaded', function () {
   // Avvia Firebase / demo session
   authInit();
 
+  // Classi/sezioni e libri di testo sono pubblici: li carichiamo
+  // subito, anche prima del login, e aggiorniamo i menu che li usano.
+  loadPublicConfigData().then(() => {
+    popolaSelectClasseSezioneVendita();
+    popolaFilterClasse();
+  });
+
   // Quando lo stato auth è pronto, aggiorna la navbar
   onAuthChange(function(user) {
     updateNavAuth(user);
+    if (!user && AUTH.dominioNonValido) {
+      AUTH.dominioNonValido = false;
+      showToast(`Accesso consentito solo con email @${DOMINIO_EMAIL_SCUOLA}.`, 'error', 6000);
+      navigate('login');
+    }
   });
 
   // Naviga alla home dopo che auth è pronto
@@ -4180,22 +4255,24 @@ document.addEventListener('DOMContentLoaded', function () {
 // con versioni async che scrivono su Firestore
 // ============================================================
 
-// ── NUOVO ANNUNCIO ────────────────────────────────────────────
-async function submitNuovoAnnuncio(e) {
+// ── NUOVO ANNUNCIO (da elenco libri adottati) ──────────────────
+async function submitVenditaLibro(e) {
   e.preventDefault();
-  const titolo    = document.getElementById('form-titolo').value.trim();
-  const autore    = document.getElementById('form-autore').value.trim();
-  const materia   = document.getElementById('form-materia').value;
-  const classe    = document.getElementById('form-classe').value;
-  const statoLibro = document.getElementById('form-stato-libro').value;
-  const prezzo    = parseFloat(document.getElementById('form-prezzo').value);
-  const isbn      = document.getElementById('form-isbn').value.trim() || '—';
-  const editore   = document.getElementById('form-editore').value.trim() || '—';
-  const indirizzo = document.getElementById('form-indirizzo').value || '';
-  const descrizione = document.getElementById('form-descrizione').value.trim();
+  if (!libroSelezionatoVendita) return;
+  const stato  = document.getElementById('vendita-stato').value;
+  const prezzo = parseFloat(document.getElementById('vendita-prezzo').value);
+  const orariSelezionati = Array.from(document.querySelectorAll('.vendita-orario-checkbox:checked')).map(c => c.value);
 
-  if (!titolo || !autore || !materia || !classe || !statoLibro || isNaN(prezzo)) {
-    showToast('Compila tutti i campi obbligatori (*)', 'error');
+  if (!stato || isNaN(prezzo)) {
+    showToast('Compila condizioni e prezzo', 'error');
+    return;
+  }
+  if (venditaDateSelezionate.length === 0) {
+    showToast('Aggiungi almeno una data disponibile per l\'incontro', 'error');
+    return;
+  }
+  if (orariSelezionati.length === 0) {
+    showToast('Seleziona almeno un orario disponibile per l\'incontro', 'error');
     return;
   }
 
@@ -4204,20 +4281,28 @@ async function submitNuovoAnnuncio(e) {
 
   try {
     await fsAddLibro({
-      titolo, autore, isbn, editore, materia, classe, indirizzo,
-      prezzo, stato_libro: statoLibro, descrizione,
-      immagine: null,
+      titolo: libroSelezionatoVendita.titolo,
+      autore: libroSelezionatoVendita.autore,
+      volume: libroSelezionatoVendita.volume,
+      isbn: libroSelezionatoVendita.isbn,
+      editore: libroSelezionatoVendita.editore,
+      materia: libroSelezionatoVendita.materia,
+      classe_sezione: libroSelezionatoVendita.classe_sezione,
+      prezzo,
+      stato_libro: stato,
+      date_disponibili: [...venditaDateSelezionate],
+      orari_disponibili: orariSelezionati,
       venditore_id: SESSION.utenteCorrente.id,
       stato_annuncio: 'disponibile'
     });
-    e.target.reset();
     showToast('Annuncio pubblicato con successo!', 'success', 5000);
+    resetFormVendita();
     setTimeout(() => switchTab('venditore', 'miei-annunci'), 800);
     renderMieiAnnunci();
   } catch(err) {
     showToast('Errore nel salvataggio: ' + err.message, 'error');
   } finally {
-    if (btn) { btn.disabled = false; btn.textContent = 'Pubblica annuncio'; }
+    if (btn) { btn.disabled = false; btn.textContent = '📤 Pubblica annuncio'; }
   }
 }
 
@@ -4337,32 +4422,39 @@ async function markExchangeDone(prenotazioneId, ruolo) {
 // ── SEGNALAZIONE ──────────────────────────────────────────────
 async function submitSegnalazione(e) {
   e.preventDefault();
+  if (!AUTH.user || !SESSION.utenteCorrente) { showToast('Devi essere loggato per inviare una richiesta', 'error'); return; }
   const tipo = document.getElementById('seg-tipo').value;
-  const msg  = document.getElementById('seg-messaggio').value.trim();
-  if (!tipo || !msg) { showToast('Compila tipo e descrizione', 'error'); return; }
+  if (!tipo) { showToast('Seleziona una problematica', 'error'); return; }
+  const etichettaTipo = (TIPI_SEGNALAZIONE.find(t => t.value === tipo) || {}).label || tipo;
 
   try {
     await fsAddSegnalazione({
       tipo,
-      libro_id: document.getElementById('seg-libro').value || null,
       segnalante_id: SESSION.utenteCorrente.id,
-      messaggio: msg,
-      stato: 'aperta'
+      segnalante_nome: `${SESSION.utenteCorrente.nome || ''} ${SESSION.utenteCorrente.cognome || ''}`.trim() || 'Studente',
+      segnalante_email: SESSION.utenteCorrente.email || '',
+      messaggio: etichettaTipo,
+      stato: 'aperta',
+      creato_il: new Date().toISOString()
     });
     e.target.reset();
-    showToast('Segnalazione inviata! Risponderemo entro 2 giorni lavorativi.', 'success', 5000);
+    showToast('Richiesta inviata! L\'amministrazione la leggerà a breve.', 'success', 5000);
   } catch(err) {
     showToast('Errore: ' + err.message, 'error');
   }
 }
 
-// ── RISOLVI SEGNALAZIONE (admin) ──────────────────────────────
-async function adminResolveSegnalazione(id) {
+// ── CAMBIO STATO SEGNALAZIONE (admin) ──────────────────────────
+async function adminImpostaStatoSegnalazione(id, nuovoStato) {
+  const messaggi = {
+    in_lavorazione: 'Messaggio segnato come "in lavorazione"',
+    risolta: 'Messaggio marcato come risolto'
+  };
   try {
-    await fsUpdateSegnalazione(id, { stato: 'risolta' });
+    await fsUpdateSegnalazione(id, { stato: nuovoStato });
     renderAdminSegnalazioni();
     renderAdmin();
-    showToast('Segnalazione marcata come risolta', 'success');
+    showToast(messaggi[nuovoStato] || 'Stato aggiornato', 'success');
   } catch(err) {
     showToast('Errore: ' + err.message, 'error');
   }
@@ -4396,47 +4488,8 @@ async function saveProfileEdit(e) {
   }
 }
 
-// ── REGISTER — aggiunge classe e indirizzo a Firestore ────────
-const _origSubmitRegister = window.submitRegister;
-async function submitRegister(e) {
-  e.preventDefault();
-  clearAuthError();
-  const nome      = document.getElementById('reg-nome').value.trim();
-  const cognome   = document.getElementById('reg-cognome').value.trim();
-  const email     = document.getElementById('reg-email').value.trim();
-  const password  = document.getElementById('reg-password').value;
-  const privacy   = document.getElementById('reg-privacy').checked;
-  const classe    = document.getElementById('reg-classe').value;
-  const indirizzo = document.getElementById('reg-indirizzo').value;
-
-  if (!nome || !cognome || !email || !password) { showAuthError('Compila tutti i campi obbligatori.'); return; }
-  if (password.length < 6) { showAuthError('La password deve essere di almeno 6 caratteri.'); return; }
-  if (!privacy) { showAuthError('Devi accettare il Regolamento e la Privacy per procedere.'); return; }
-
-  const btn = document.getElementById('btn-register-submit');
-  if (btn) { btn.disabled = true; btn.textContent = 'Creazione account…'; }
-  showAuthLoading('Creazione account in corso…');
-
-  const result = await registerWithEmail(email, password, nome, cognome);
-
-  if (result.ok && AUTH.profile) {
-    // Salva classe/indirizzo scelti nel form
-    const extraData = { nome, cognome, classe, indirizzo };
-    await fsUpsertUtente(AUTH.user.uid, extraData);
-    Object.assign(AUTH.profile, extraData);
-    Object.assign(SESSION.utenteCorrente, extraData);
-  }
-
-  hideAuthLoading();
-  if (btn) { btn.disabled = false; btn.textContent = 'Crea account'; }
-
-  if (!result.ok) { showAuthError(result.error); return; }
-  showToast(`Benvenuto, ${nome}! Account creato con successo 🎉`, 'success', 5000);
-  navigate('profilo');
-}
-
 // ── RELOAD dopo login ─────────────────────────────────────────
-// Override renderHome per mostrare contatori da Firestore
+// renderHome legge i contatori da Firestore (via DB)
 function renderHome() {
   const disponibili = DB.libri.filter(l => l.stato_annuncio === 'disponibile').length;
   const scambi      = DB.prenotazioni.filter(p => p.stato_prenotazione === 'scambio_completato').length;
